@@ -5,20 +5,26 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Picture {
+@Table(name = "likes")
+public class Like {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private byte[] content;
+    @OneToOne
+    @JoinColumn(name = "post_ID")
+    private Post post;
 
-    private LocalDateTime created;
+
+    @ManyToOne
+    @JoinColumn(name = "user_ID")
+    private User user;
 
 }
