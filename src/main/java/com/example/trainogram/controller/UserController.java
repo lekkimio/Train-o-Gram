@@ -6,6 +6,7 @@ import com.example.trainogram.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -28,7 +29,7 @@ public class UserController {
     }
 
     @PostMapping()
-    public User addUser(@RequestBody User user) {
+    public Optional<User> addUser(@RequestBody User user) throws UserNotFoundException {
         return userService.addUser(user);
     }
 

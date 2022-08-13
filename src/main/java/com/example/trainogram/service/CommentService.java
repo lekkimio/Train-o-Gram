@@ -1,13 +1,19 @@
 package com.example.trainogram.service;
 
 import com.example.trainogram.model.Comment;
-import com.example.trainogram.model.Post;
 import com.example.trainogram.model.User;
+
+import java.util.List;
 
 public interface CommentService {
 
-    void addComment(User user, Post post, String text);
+    Comment addComment(User user, Long post, Comment comment);
 
-    void deleteComment(User user, Post post, Comment comment);
+    void deleteComment(Long comment);
 
+    List<Comment> getAllComments(Long postId);
+
+    void update(Comment comment);
+
+    Comment findCommentById(Long commentId);
 }

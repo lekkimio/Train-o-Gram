@@ -4,12 +4,13 @@ import com.example.trainogram.exception.UserNotFoundException;
 import com.example.trainogram.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
     User findUserByUsername(String username);
 
-    User addUser(User user);
+    Optional<User> addUser(User user) throws UserNotFoundException;
 
     void deleteUser(Long id);
 
@@ -18,4 +19,6 @@ public interface UserService {
     List<User> findAllUsers();
 
     User findUserById(Long id) throws UserNotFoundException;
+
+    User findAuthenticatedUser();
 }

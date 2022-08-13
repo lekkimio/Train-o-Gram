@@ -1,7 +1,10 @@
 package com.example.trainogram.service;
 
+import com.example.trainogram.model.Like;
 import com.example.trainogram.model.Post;
 import com.example.trainogram.model.User;
+
+import java.util.List;
 
 public interface LikeService {
 
@@ -9,4 +12,5 @@ public interface LikeService {
 
     void deleteLike(User user, Post post);
 
+    List<Like> findAllLikes(Post post);
 }

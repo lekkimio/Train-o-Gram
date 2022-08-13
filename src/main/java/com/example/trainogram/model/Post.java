@@ -18,7 +18,9 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private Integer likes;
+
+    private Integer likes = 0;
+
 
     @OneToOne
     @JoinColumn(name = "post_author_id")

@@ -13,6 +13,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p WHERE p.postAuthor.id = ?1")
     List<Post> findAllByUserId(Long id);
 
-    @Query("SELECT p FROM Post p WHERE p.postAuthor.id = ?1 AND p.id = ?2")
+    @Query("SELECT p FROM Post p WHERE p.id = ?1")
     Post findByPostId(Long id);
+
+
+
 }
