@@ -1,46 +1,45 @@
 package com.example.trainogram.controller;
 
 import com.example.trainogram.exception.UserNotFoundException;
+import com.example.trainogram.facade.UserFacade;
 import com.example.trainogram.model.User;
-import com.example.trainogram.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserService userService;
+    private final UserFacade userFacade;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UserFacade userFacade) {
+        this.userFacade = userFacade;
     }
 
     @GetMapping()
-    public List<User> getAllUsers() {
-        return userService.findAllUsers();
+    public List<User> getAllUsers() throws UserNotFoundException {
+        return userFacade.findAllUsers();
     }
 
     @GetMapping("/{id}")
     public User getUser(@PathVariable Long id) throws UserNotFoundException {
-        return userService.findUserById(id);
+        return userFacade.findUserById(id);
     }
 
-    @PostMapping()
-    public Optional<User> addUser(@RequestBody User user) throws UserNotFoundException {
-        return userService.addUser(user);
+    @PostMapping("/{key}")
+    public User addUser(@RequestBody User user, @PathVariable String key) throws UserNotFoundException {
+        return userFacade.addUser(user, key);
     }
 
-    @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User user) throws UserNotFoundException {
-        return userService.updateUser(id, user);
+    @PutMapping("/{id}/{key}")
+    public User updateUser(@PathVariable Long id, @RequestBody User user, @PathVariable String key) throws UserNotFoundException {
+        return userFacade.updateUser(id, user, key);
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+        userFacade.deleteUser(id);
     }
 
 

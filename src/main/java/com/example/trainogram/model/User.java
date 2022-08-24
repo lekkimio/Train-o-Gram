@@ -26,4 +26,7 @@ public class User {
     @JoinColumn(name = "avatar_ID")
     private Picture avatar;
 
+    @Column(name = "role", columnDefinition = "VARCHAR(20)")
+    private Role role;
+
 }

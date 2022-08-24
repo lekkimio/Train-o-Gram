@@ -2,33 +2,41 @@ package com.example.trainogram.security;
 
 import com.example.trainogram.model.User;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
 
 
 public class CustomUserDetails implements UserDetails {
 
-    private final User user;
+    /*private final User user;*/
 
-    public CustomUserDetails(User user) {
-        this.user = user;
+    private final String username;
+    private final String password;
+    private final List<SimpleGrantedAuthority> authorities;
+
+    public CustomUserDetails(User user, String username, String password, List<SimpleGrantedAuthority> authorities) {
+
+        this.username = username;
+        this.password = password;
+        this.authorities = authorities;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return authorities;
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return username;
     }
 
     @Override
@@ -49,5 +57,16 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public static UserDetails fromUser(User user){
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                true,
+                true,
+                true,
+                true,
+                user.getRole().getAuthorities());
     }
 }

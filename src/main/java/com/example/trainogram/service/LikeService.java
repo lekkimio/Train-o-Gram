@@ -13,4 +13,10 @@ public interface LikeService {
     void deleteLike(User user, Post post);
 
     List<Like> findAllLikes(Post post);
+
+    List<User> findUserByPostId(Long post);
+
+    List<Post> findAllPostsLikedByUser(Long userId);
+
+    Like findLikeByUserAndPost(User user, Post post);
 }

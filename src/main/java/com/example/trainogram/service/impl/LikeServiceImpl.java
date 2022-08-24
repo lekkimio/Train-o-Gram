@@ -29,11 +29,27 @@ public class LikeServiceImpl implements LikeService {
     @Override
     public void deleteLike(User user, Post post) {
         Like like = likeRepository.getLikeByUserAndPost(user, post);
+        System.out.println(like);
         likeRepository.delete(like);
     }
 
     @Override
     public List<Like> findAllLikes(Post post) {
         return likeRepository.findAllByPostId(post);
+    }
+
+    @Override
+    public List<User> findUserByPostId(Long postId) {
+        return likeRepository.findUserByPostId(postId);
+    }
+
+    @Override
+    public List<Post> findAllPostsLikedByUser(Long userId) {
+        return likeRepository.findAllPostsLikedByUser(userId);
+    }
+
+    @Override
+    public Like findLikeByUserAndPost(User user, Post post) {
+        return likeRepository.getLikeByUserAndPost(user, post);
     }
 }

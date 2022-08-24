@@ -19,16 +19,14 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment addComment(User user, Long postId, Comment comment) {
-        comment.setCommentAuthor(user);
-        comment.setPostId(postId);
+    public Comment addComment(Comment comment) {
         comment.setCommentPub(LocalDateTime.now());
         return commentRepository.save(comment);
     }
 
     @Override
     public void deleteComment(Long comment) {
-            commentRepository.deleteById(comment);
+        commentRepository.deleteById(comment);
     }
 
     @Override

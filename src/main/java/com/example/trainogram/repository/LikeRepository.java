@@ -17,4 +17,10 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
 
     @Query(value = "SELECT * FROM likes WHERE post_id = ?1", nativeQuery = true)
     List<Like> findAllByPostId(Post post);
+
+    @Query("select u from Like l LEFT JOIN FETCH User u on l.user.id = u.id where l.post.id = ?1")
+    List<User> findUserByPostId(Long postId);
+
+    @Query("select p from Like l LEFT JOIN FETCH Post p on l.post.id = p.id where l.user.id = ?1")
+    List<Post> findAllPostsLikedByUser(Long userId);
 }

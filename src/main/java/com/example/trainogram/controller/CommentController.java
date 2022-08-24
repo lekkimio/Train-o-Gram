@@ -1,5 +1,6 @@
 package com.example.trainogram.controller;
 
+import com.example.trainogram.exception.CommentException;
 import com.example.trainogram.facade.CommentFacade;
 import com.example.trainogram.model.Comment;
 
@@ -23,18 +24,19 @@ public class CommentController {
     }
 
     @PostMapping("/{postId}")
-    public Comment addComment(@RequestBody Comment comment,@PathVariable Long postId) {
+    public Comment addComment(@RequestBody Comment comment, @PathVariable Long postId) {
         return commentFacade.addComment(postId,comment);
     }
 
+    @DeleteMapping("/{postId}/{commentId}")
+    public void deleteComment(@PathVariable Long postId,@PathVariable Long commentId) throws CommentException {
+        commentFacade.deleteComment(postId,commentId);
+    }
+
     @PutMapping("/{postId}/{commentId}")
-    public void updateComment(@RequestBody Comment comment,@PathVariable Long postId ,@PathVariable Long commentId) {
+    public void updateComment(@RequestBody Comment comment,@PathVariable Long postId ,@PathVariable Long commentId) throws CommentException {
         commentFacade.updateComment(postId,commentId,comment);
     }
 
-    @DeleteMapping("/{postId}/{commentId}")
-    public void deleteComment(@PathVariable Long postId,@PathVariable Long commentId) {
-        commentFacade.deleteComment(postId,commentId);
-    }
 
 }

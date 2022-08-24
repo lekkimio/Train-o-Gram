@@ -1,10 +1,13 @@
 package com.example.trainogram.service.impl;
 
 import com.example.trainogram.model.Friendship;
+import com.example.trainogram.model.RequestStatus;
 import com.example.trainogram.model.User;
 import com.example.trainogram.repository.FriendshipRepository;
 import com.example.trainogram.service.FriendshipService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class FriendshipServiceImpl implements FriendshipService {
@@ -16,16 +19,41 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public void addFriend(User user, User friend) {
-        Friendship friendship = new Friendship();
-        friendship.setOwner(user);
-        friendship.setFriend(friend);
-        friendshipRepository.save(friendship);
+    public Friendship addFriend(User user, User friend) {
+        Friendship newFriendship = new Friendship();
+        newFriendship.setOwner(user);
+        newFriendship.setFriend(friend);
+        Friendship friendship = friendshipRepository.findByUserAndFriend(friend, user);
+        if (friendship != null) {
+            newFriendship.setStatus(RequestStatus.FRIEND.name());
+            friendship.setStatus(RequestStatus.FRIEND.name());
+            friendshipRepository.save(friendship);
+        } else {
+            newFriendship.setStatus(RequestStatus.REQUEST.name());
+        }
+
+        return friendshipRepository.save(newFriendship);
     }
 
     @Override
-    public void deleteFriend(User user, User friend) {
-        Friendship friendship = friendshipRepository.getFriendshipByUserAndFriend(user, friend);
+    public void deleteFriend(User owner, User friend) {
+        Friendship friendship = friendshipRepository.findByUserAndFriend(owner, friend);
+        if(friendship.getStatus().equals(RequestStatus.FRIEND.name())) {
+            Friendship otherFriendship = friendshipRepository.findByUserAndFriend(friend, owner);
+            otherFriendship.setStatus(RequestStatus.REQUEST.name());
+            friendshipRepository.save(otherFriendship);
+        }
         friendshipRepository.delete(friendship);
+        System.out.println("Friendship deleted");
+    }
+
+    @Override
+    public List<User> findAllFriends(Long userId) {
+        return friendshipRepository.findAllFriendsByOwnerId(userId);
+    }
+
+    @Override
+    public List<User> findAllRequests(Long userId) {
+        return friendshipRepository.findAllRequestByOwnerId(userId);
     }
 }

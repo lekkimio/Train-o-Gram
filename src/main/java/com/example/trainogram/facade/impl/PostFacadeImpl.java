@@ -2,12 +2,17 @@ package com.example.trainogram.facade.impl;
 
 import com.example.trainogram.exception.PostException;
 import com.example.trainogram.facade.PostFacade;
+import com.example.trainogram.model.Comment;
 import com.example.trainogram.model.Post;
 import com.example.trainogram.model.User;
+import com.example.trainogram.service.CommentService;
+import com.example.trainogram.service.PictureService;
 import com.example.trainogram.service.PostService;
 import com.example.trainogram.service.UserService;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,16 +22,25 @@ public class PostFacadeImpl implements PostFacade {
 
     private final PostService postService;
     private final UserService userService;
+    private final CommentService commentService;
+    private final PictureService pictureService;
 
-    public PostFacadeImpl(PostService postService, UserService userService) {
+    public PostFacadeImpl(PostService postService, UserService userService, CommentService commentService, PictureService pictureService) {
         this.postService = postService;
         this.userService = userService;
+        this.commentService = commentService;
+        this.pictureService = pictureService;
     }
 
     @Override
-    public Post addPost(Post post) {
+    public Post addPost(String postText, MultipartFile file) throws IOException {
         User user = userService.findAuthenticatedUser();
+        Post post = new Post();
         post.setPostAuthor(user);
+        post.setPostText(postText);
+        post.setPostPicture(pictureService.addPicture(file));
+
+
         return postService.addPost(post);
     }
 
@@ -66,6 +80,12 @@ public class PostFacadeImpl implements PostFacade {
         }
 
         return postToUpdate;
+    }
+
+    @Override
+    public byte[] findPostPicture(Long id) {
+        Post post = postService.findByPostId(id);
+        return pictureService.findPictureById(post.getPostPicture().getId());
     }
 
 }

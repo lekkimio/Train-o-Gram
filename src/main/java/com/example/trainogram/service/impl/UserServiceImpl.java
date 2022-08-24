@@ -1,6 +1,7 @@
 package com.example.trainogram.service.impl;
 
 import com.example.trainogram.exception.UserNotFoundException;
+import com.example.trainogram.model.Role;
 import com.example.trainogram.model.User;
 import com.example.trainogram.repository.UserRepository;
 import com.example.trainogram.service.UserService;
@@ -9,7 +10,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -18,6 +18,8 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+
+
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -25,20 +27,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUserByUsername(String username) {
-        return userRepository.findUserByUsername(username);
+        return userRepository.findUserByUsername(username).get();
     }
 
     @Override
-    public Optional<User> addUser(User user) throws UserNotFoundException {
-        Optional<User> user1 = Optional.ofNullable(userRepository.findUserByUsername(user.getUsername()));
-        if (user1.isPresent()) {
+    public User addUser(User user) throws UserNotFoundException {
+        if (userRepository.findUserByUsername(user.getUsername()).isPresent()) {
             throw new UserNotFoundException("User already exists");
         } else {
             String encodedPass = passwordEncoder.encode(user.getPassword());
             user.setPassword(encodedPass);
-            userRepository.save(user);
         }
-        return user1;
+        return userRepository.save(user);
     }
 
     @Override
@@ -48,11 +48,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(Long id, User user) throws UserNotFoundException {
-
+        //TODO: check if user is authenticated and if he is trying to update his own account, if not throw exception,
+        // if yes, update user
+        // check if user exists
+        // check if input info is the same as the one in the database
         if (userRepository.findById(id).isPresent()) {
-            user.setId(id);
-            String encodedPass = passwordEncoder.encode(user.getPassword());
-            user.setPassword(encodedPass);
+           user.setRole(Role.USER);
             return userRepository.save(user);
         } else {
             throw new UserNotFoundException("User not found");
@@ -71,6 +72,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findAuthenticatedUser() {
-        return userRepository.findUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        return userRepository.findUserByUsername(
+                SecurityContextHolder.getContext().getAuthentication().getName()).get();
     }
 }

@@ -1,8 +1,10 @@
 package com.example.trainogram.controller;
 
 
+import com.example.trainogram.exception.LikeException;
 import com.example.trainogram.facade.LikeFacade;
-import com.example.trainogram.model.Like;
+import com.example.trainogram.model.Post;
+import com.example.trainogram.model.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,13 +19,24 @@ public class LikeController {
         this.likeFacade = likeFacade;
     }
 
-    @GetMapping("/{postId}")
+   /* @GetMapping("/{postId}")
     public List<Like> getAllLikedUsers(@PathVariable Long postId) {
         return likeFacade.findAllLikedUsers(postId);
+    }*/
+
+    @GetMapping("/{postId}")
+    public List<User> getAllLikedUsers(@PathVariable Long postId) {
+        return likeFacade.findUserByPostId(postId);
+
+    }
+
+    @GetMapping()
+    public List<Post> getAllLikedPosts() {
+        return likeFacade.findAllPostsLikedByUser();
     }
 
     @PostMapping("/{postId}")
-    public void addLikeToPost(@PathVariable Long postId) {
+    public void addLikeToPost(@PathVariable Long postId) throws LikeException {
         likeFacade.addLikeToPost(postId);
     }
 

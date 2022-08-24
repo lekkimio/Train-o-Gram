@@ -3,8 +3,11 @@ package com.example.trainogram.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.coyote.Request;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,13 +19,15 @@ public class Friendship {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "owner_id", nullable = false)
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "owner_ID")
     private User owner;
 
 
-    @OneToOne
-    @JoinColumn(name = "friend_id")
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "friend_ID")
     private User friend;
+
+    private String status;
 
 }

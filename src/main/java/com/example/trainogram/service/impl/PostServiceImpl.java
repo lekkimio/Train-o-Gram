@@ -15,11 +15,9 @@ import java.util.List;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-    private final CommentService commentService;
 
-    public PostServiceImpl(PostRepository postRepository, CommentService commentService) {
+    public PostServiceImpl(PostRepository postRepository) {
         this.postRepository = postRepository;
-        this.commentService = commentService;
     }
 
     @Override
@@ -53,22 +51,5 @@ public class PostServiceImpl implements PostService {
         }
 
         return postRepository.save(postToUpdate);
-    }
-
-    @Override
-    public void addComment(Long postId, Comment comment) {
-        Post post = postRepository.findByPostId(postId);
-        post.getComments().add(comment);
-        postRepository.save(post);
-    }
-
-    @Override
-    public void deleteComment(Long post, Long comment) {
-        Post postToUpdate = postRepository.findByPostId(post);
-
-        Comment commentToDelete = commentService.findCommentById(comment);
-
-        postToUpdate.getComments().remove(commentToDelete);
-        postRepository.save(postToUpdate);
     }
 }

@@ -1,14 +1,13 @@
 package com.example.trainogram.controller;
 
 import com.example.trainogram.exception.PostException;
-import com.example.trainogram.exception.UserNotFoundException;
 import com.example.trainogram.facade.PostFacade;
 import com.example.trainogram.model.Post;
-import com.example.trainogram.model.User;
-import com.example.trainogram.service.PostService;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.security.Principal;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -31,9 +30,14 @@ public class PostController {
         return postFacade.findByPostId(id);
     }
 
-    @PostMapping
-    public Post addPost(@RequestBody Post post) {
-        return postFacade.addPost(post);
+    @GetMapping(value = "/image/{id}", produces = MediaType.IMAGE_PNG_VALUE)
+    public @ResponseBody byte[] getPostPicture(@PathVariable Long id) {
+        return postFacade.findPostPicture(id);
+    }
+
+    @PostMapping()
+    public Post addPost(@RequestParam String postText, MultipartFile file) throws IOException {
+        return postFacade.addPost(postText, file);
     }
 
     @PutMapping("/{id}")

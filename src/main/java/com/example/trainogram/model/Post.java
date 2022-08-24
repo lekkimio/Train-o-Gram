@@ -32,10 +32,9 @@ public class Post {
 
     private String postText;
 
-
     private LocalDateTime pubDate;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     public List<Comment> comments;
 
 

@@ -1,24 +1,24 @@
 package com.example.trainogram.controller;
 
 import com.example.trainogram.exception.UserNotFoundException;
+import com.example.trainogram.facade.UserFacade;
 import com.example.trainogram.model.User;
 import com.example.trainogram.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import javax.websocket.server.PathParam;
 
 
 @Controller
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserService userService;
+    private final UserFacade userFacade;
 
-    public AuthController(UserService userService) {
-        this.userService = userService;
+    public AuthController(UserFacade userFacade) {
+        this.userFacade = userFacade;
     }
 
     @GetMapping("/login")
@@ -37,9 +37,9 @@ public class AuthController {
         return "signup";
     }
 
-    @PostMapping("/signup")
-    public String signupProcess(@RequestBody User user) throws UserNotFoundException {
-        userService.addUser(user);
+    @PostMapping("/signup/{key}")
+    public String signupProcess(@RequestBody User user, @PathVariable String key) throws UserNotFoundException {
+        userFacade.addUser(user, key);
         return "redirect:localhost:8080/users";
     }
 

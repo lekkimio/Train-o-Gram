@@ -17,6 +17,7 @@ public class Picture {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Lob
     private byte[] content;
 
     private LocalDateTime created;
