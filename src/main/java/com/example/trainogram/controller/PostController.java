@@ -4,6 +4,7 @@ import com.example.trainogram.exception.PostException;
 import com.example.trainogram.facade.PostFacade;
 import com.example.trainogram.model.Post;
 import com.example.trainogram.model.dto.PostDto;
+import com.example.trainogram.model.dto.SponsorPostDto;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,6 +50,39 @@ public class PostController {
     @DeleteMapping("/{id}")
     public void deletePost(@PathVariable Long id) throws PostException {
         postFacade.deletePost(id);
+    }
+
+
+    /**
+    sponsor posts
+    **/
+
+
+    @GetMapping("/sponsor/{sponsorPostId}")
+    public SponsorPostDto getSponsorPost(@PathVariable Long sponsorPostId){
+        //find Post
+        return postFacade.getSponsorPost(sponsorPostId);
+    }
+
+    @GetMapping("/sponsor/{sponsorId}")
+    public List<SponsorPostDto> getAllSponsorPost(@PathVariable Long sponsorId){
+        //search by User
+        return postFacade.getAllSponsorPost(sponsorId);
+    }
+
+    @PostMapping("/sponsor")
+    public SponsorPostDto addSponsorPost(@RequestParam String postText, MultipartFile file, Long sponsorId){
+        return postFacade.addSponsorPost(postText,file, sponsorId);
+    }
+
+    @PutMapping("/sponsor/{sponsorId}")
+    public SponsorPostDto updateSponsorPost(@PathVariable Long sponsorId){
+        return postFacade.updateSponsorPost(sponsorId);
+    }
+
+    @DeleteMapping("/sponsor/{sponsorId}")
+    public SponsorPostDto deleteSponsorPost(@PathVariable Long sponsorId){
+        return postFacade.deleteSponsorPost(sponsorId);
     }
 
 }

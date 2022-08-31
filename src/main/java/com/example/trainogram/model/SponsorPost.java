@@ -5,21 +5,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+
 @Entity
-public class Picture {
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+public class SponsorPost {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
-    private byte[] content;
+    @OneToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
 
-    private LocalDateTime created;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

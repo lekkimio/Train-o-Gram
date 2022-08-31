@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User addUser(User user) throws UserNotFoundException {
-        if (userRepository.findUserByUsername(user.getUsername()).equals(new User())) {
+        if (userRepository.findUserByUsername(user.getUsername()) != null) {
             throw new UserNotFoundException("User already exists");
         } else {
             String encodedPass = passwordEncoder.encode(user.getPassword());

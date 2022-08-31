@@ -30,8 +30,8 @@ public class UserController {
         return userFacade.findUserById(id);
     }
 
-    @PostMapping("/{key}")
-    public UserDto addUser(@RequestBody User user, @PathVariable String key, MultipartFile file) throws UserNotFoundException, IOException {
+    @PostMapping()
+    public UserDto addUser(@RequestBody User user, @RequestParam(required = false) String key, MultipartFile file) throws UserNotFoundException, IOException {
         return userFacade.addUser(user, file, key);
     }
 

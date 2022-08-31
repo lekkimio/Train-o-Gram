@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class UserFacadeImpl implements UserFacade {
@@ -58,7 +59,7 @@ public class UserFacadeImpl implements UserFacade {
 
     @Override
     public UserDto addUser(User user, MultipartFile file, String key) throws UserNotFoundException, IOException {
-        if (key.equals(adminKey)){
+        if (Objects.equals(key, adminKey)){
             user.setRole(Role.ADMIN);
         } else {
             user.setRole(Role.USER);

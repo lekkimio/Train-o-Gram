@@ -3,16 +3,15 @@ package com.example.trainogram.facade.impl;
 import com.example.trainogram.exception.PostException;
 import com.example.trainogram.facade.PostFacade;
 import com.example.trainogram.model.Post;
+import com.example.trainogram.model.SponsorPost;
 import com.example.trainogram.model.User;
 import com.example.trainogram.model.dto.PostDto;
-import com.example.trainogram.model.dto.UserDto;
-import com.example.trainogram.service.CommentService;
-import com.example.trainogram.service.PictureService;
-import com.example.trainogram.service.PostService;
-import com.example.trainogram.service.UserService;
+import com.example.trainogram.model.dto.SponsorPostDto;
+import com.example.trainogram.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,13 +29,15 @@ public class PostFacadeImpl implements PostFacade {
     private final UserService userService;
     private final CommentService commentService;
     private final PictureService pictureService;
+    private final SponsorPostService sponsorPostService;
     private final ModelMapper mapToDto;
 
-    public PostFacadeImpl(PostService postService, UserService userService, CommentService commentService, PictureService pictureService, ModelMapper mapToDto) {
+    public PostFacadeImpl(@Qualifier("postServiceImpl") PostService postService, UserService userService, CommentService commentService, PictureService pictureService, SponsorPostService sponsorPostService, ModelMapper mapToDto) {
         this.postService = postService;
         this.userService = userService;
         this.commentService = commentService;
         this.pictureService = pictureService;
+        this.sponsorPostService = sponsorPostService;
         this.mapToDto = mapToDto;
     }
 
@@ -99,6 +100,43 @@ public class PostFacadeImpl implements PostFacade {
     public byte[] findPostPicture(Long id) {
         Post post = postService.findByPostId(id);
         return pictureService.findPictureById(post.getPostPicture().getId());
+    }
+
+
+    @Override
+    public SponsorPostDto addSponsorPost(String postText, MultipartFile file, Long sponsorId) {
+        Post post = new Post();
+        post.setPostText(postText);
+        try {
+            post.setPostPicture(pictureService.addPicture(file));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        SponsorPost sponsorPost = sponsorPostService.addSponsorPost(postService.addPost(post), sponsorId);
+
+        return mapToDto.map(sponsorPost, SponsorPostDto.class);
+    }
+
+    @Override
+    public SponsorPostDto getSponsorPost(Long sponsorPostId) {
+        SponsorPost sponsorPost = sponsorPostService.findBySponsorPostId(sponsorPostId);
+        return mapToDto.map(sponsorPost,SponsorPostDto.class);
+    }
+
+    @Override
+    public List<SponsorPostDto> getAllSponsorPost(Long sponsorId) {
+        return null;
+    }
+
+    @Override
+    public SponsorPostDto updateSponsorPost(Long sponsorId) {
+        return null;
+    }
+
+    @Override
+    public SponsorPostDto deleteSponsorPost(Long sponsorId) {
+        return null;
     }
 
 }

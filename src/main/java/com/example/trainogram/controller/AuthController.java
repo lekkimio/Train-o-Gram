@@ -20,7 +20,7 @@ public class AuthController {
         this.userFacade = userFacade;
     }
 
-    @GetMapping("/login")
+    /*@GetMapping("/login")
     public String login() {
         return "login";
     }
@@ -34,10 +34,10 @@ public class AuthController {
     public String signup(Model model) {
         model.addAttribute("user", new User());
         return "signup";
-    }
+    }*/
 
-    @PostMapping("/signup/{key}")
-    public String signupProcess(@RequestBody User user, @PathVariable String key) throws UserNotFoundException, IOException {
+    @PostMapping("/signup")
+    public String signupProcess(@RequestBody User user, @RequestParam(required = false) String key) throws UserNotFoundException, IOException {
         userFacade.addUser(user, null, key);
         return "redirect:localhost:8080/users";
     }
