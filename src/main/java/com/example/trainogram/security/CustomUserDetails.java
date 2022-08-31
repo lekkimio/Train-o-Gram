@@ -63,10 +63,6 @@ public class CustomUserDetails implements UserDetails {
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                true,
-                true,
-                true,
-                true,
                 user.getRole().getAuthorities());
     }
 }

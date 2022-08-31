@@ -1,3 +1,4 @@
+/*
 package com.example.trainogram.security;
 
 import com.example.trainogram.model.Role;
@@ -42,15 +43,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
-                /*.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()*/
+                */
+/*.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()*//*
+
                 .authorizeRequests()
-                /*.antMatchers("/auth/**").permitAll()
-                .antMatchers("/users/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
-                .antMatchers("/admin/**").hasRole(Role.ADMIN.name())*/
                 .antMatchers("/auth/**").permitAll()
+                .antMatchers("/users/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
+                .antMatchers("/admin/**").hasRole(Role.ADMIN.name())
+                */
+/*.antMatchers("/auth/**").permitAll()
                 .antMatchers("/users/**").authenticated()
-                .antMatchers("/admin/**").authenticated()
+                .antMatchers("/admin/**").authenticated()*//*
+
                 .antMatchers("/").permitAll()
                 .anyRequest().authenticated()
                 .and()
@@ -63,3 +68,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic();
     }
 }
+*/

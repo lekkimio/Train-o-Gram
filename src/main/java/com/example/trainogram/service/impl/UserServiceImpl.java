@@ -3,6 +3,7 @@ package com.example.trainogram.service.impl;
 import com.example.trainogram.exception.UserNotFoundException;
 import com.example.trainogram.model.Role;
 import com.example.trainogram.model.User;
+import com.example.trainogram.model.dto.UserDto;
 import com.example.trainogram.repository.UserRepository;
 import com.example.trainogram.service.UserService;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,12 +28,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUserByUsername(String username) {
-        return userRepository.findUserByUsername(username).get();
+        return userRepository.findUserByUsername(username);
     }
 
     @Override
     public User addUser(User user) throws UserNotFoundException {
-        if (userRepository.findUserByUsername(user.getUsername()).isPresent()) {
+        if (userRepository.findUserByUsername(user.getUsername()).equals(new User())) {
             throw new UserNotFoundException("User already exists");
         } else {
             String encodedPass = passwordEncoder.encode(user.getPassword());
@@ -73,6 +74,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findAuthenticatedUser() {
         return userRepository.findUserByUsername(
-                SecurityContextHolder.getContext().getAuthentication().getName()).get();
+                SecurityContextHolder.getContext().getAuthentication().getName());
     }
 }

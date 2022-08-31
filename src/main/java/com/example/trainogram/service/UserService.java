@@ -2,6 +2,7 @@ package com.example.trainogram.service;
 
 import com.example.trainogram.exception.UserNotFoundException;
 import com.example.trainogram.model.User;
+import com.example.trainogram.model.dto.UserDto;
 
 import java.util.List;
 

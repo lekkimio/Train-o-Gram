@@ -5,12 +5,14 @@ import com.example.trainogram.exception.LikeException;
 import com.example.trainogram.facade.LikeFacade;
 import com.example.trainogram.model.Post;
 import com.example.trainogram.model.User;
+import com.example.trainogram.model.dto.PostDto;
+import com.example.trainogram.model.dto.UserDto;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/like")
+@RequestMapping("/users/posts/like")
 public class LikeController {
 
     private final LikeFacade likeFacade;
@@ -25,13 +27,13 @@ public class LikeController {
     }*/
 
     @GetMapping("/{postId}")
-    public List<User> getAllLikedUsers(@PathVariable Long postId) {
+    public List<UserDto> getAllLikedUsers(@PathVariable Long postId) {
         return likeFacade.findUserByPostId(postId);
 
     }
 
     @GetMapping()
-    public List<Post> getAllLikedPosts() {
+    public List<PostDto> getAllLikedPosts() {
         return likeFacade.findAllPostsLikedByUser();
     }
 

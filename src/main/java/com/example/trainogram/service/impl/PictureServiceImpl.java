@@ -25,6 +25,9 @@ public class PictureServiceImpl implements PictureService {
         Picture picture = new Picture();
         picture.setContent(file.getBytes());
         picture.setCreated(LocalDateTime.now());
+
+
+
         return pictureRepository.save(picture);
 
     }

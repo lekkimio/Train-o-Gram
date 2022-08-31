@@ -5,9 +5,14 @@ import com.example.trainogram.facade.LikeFacade;
 import com.example.trainogram.model.Like;
 import com.example.trainogram.model.Post;
 import com.example.trainogram.model.User;
+import com.example.trainogram.model.dto.PostDto;
+import com.example.trainogram.model.dto.UserDto;
 import com.example.trainogram.service.*;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 @Component
@@ -17,12 +22,15 @@ public class LikeFacadeImpl implements LikeFacade {
     private final UserService userService;
     private final PostService postService;
 
+    private final ModelMapper mapToDto;
+
     private final NotificationService notificationService;
 
-    public LikeFacadeImpl(LikeService likeService, UserService userService, PostService postService, NotificationService notificationService) {
+    public LikeFacadeImpl(LikeService likeService, UserService userService, PostService postService, ModelMapper mapToDto, NotificationService notificationService) {
         this.likeService = likeService;
         this.userService = userService;
         this.postService = postService;
+        this.mapToDto = mapToDto;
         this.notificationService = notificationService;
     }
 
@@ -68,13 +76,19 @@ public class LikeFacadeImpl implements LikeFacade {
     }
 
     @Override
-    public List<User> findUserByPostId(Long postId) {
-        return likeService.findUserByPostId(postId);
+    public List<UserDto> findUserByPostId(Long postId) {
+        List<User> users = likeService.findUserByPostId(postId);
+        Type listType = new TypeToken<List<UserDto>>(){}.getType();
+        return mapToDto.map(users,listType);
+
     }
 
     @Override
-    public List<Post> findAllPostsLikedByUser() {
+    public List<PostDto> findAllPostsLikedByUser() {
         User user = userService.findAuthenticatedUser();
-        return likeService.findAllPostsLikedByUser(user.getId());
+
+        List<Post> posts = likeService.findAllPostsLikedByUser(user.getId());
+        Type listType = new TypeToken<List<PostDto>>(){}.getType();
+        return mapToDto.map(posts,listType);
     }
 }

@@ -3,12 +3,11 @@ package com.example.trainogram.controller;
 import com.example.trainogram.exception.UserNotFoundException;
 import com.example.trainogram.facade.UserFacade;
 import com.example.trainogram.model.User;
-import com.example.trainogram.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
+import java.io.IOException;
 
 
 @Controller
@@ -38,8 +37,8 @@ public class AuthController {
     }
 
     @PostMapping("/signup/{key}")
-    public String signupProcess(@RequestBody User user, @PathVariable String key) throws UserNotFoundException {
-        userFacade.addUser(user, key);
+    public String signupProcess(@RequestBody User user, @PathVariable String key) throws UserNotFoundException, IOException {
+        userFacade.addUser(user, null, key);
         return "redirect:localhost:8080/users";
     }
 

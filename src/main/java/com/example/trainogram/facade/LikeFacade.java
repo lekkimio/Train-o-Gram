@@ -4,6 +4,8 @@ import com.example.trainogram.exception.LikeException;
 import com.example.trainogram.model.Like;
 import com.example.trainogram.model.Post;
 import com.example.trainogram.model.User;
+import com.example.trainogram.model.dto.PostDto;
+import com.example.trainogram.model.dto.UserDto;
 
 import java.util.List;
 
@@ -15,7 +17,7 @@ public interface LikeFacade {
 
     List<Like> findAllLikedUsers(Long postId);
 
-    List<User> findUserByPostId(Long postId);
+    List<UserDto> findUserByPostId(Long postId);
 
-    List<Post> findAllPostsLikedByUser();
+    List<PostDto> findAllPostsLikedByUser();
 }

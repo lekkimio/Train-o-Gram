@@ -3,8 +3,11 @@ package com.example.trainogram.controller;
 import com.example.trainogram.exception.UserNotFoundException;
 import com.example.trainogram.facade.UserFacade;
 import com.example.trainogram.model.User;
+import com.example.trainogram.model.dto.UserDto;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -18,22 +21,22 @@ public class UserController {
     }
 
     @GetMapping()
-    public List<User> getAllUsers() throws UserNotFoundException {
+    public List<UserDto> getAllUsers() throws UserNotFoundException {
         return userFacade.findAllUsers();
     }
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable Long id) throws UserNotFoundException {
+    public UserDto getUser(@PathVariable Long id) throws UserNotFoundException {
         return userFacade.findUserById(id);
     }
 
     @PostMapping("/{key}")
-    public User addUser(@RequestBody User user, @PathVariable String key) throws UserNotFoundException {
-        return userFacade.addUser(user, key);
+    public UserDto addUser(@RequestBody User user, @PathVariable String key, MultipartFile file) throws UserNotFoundException, IOException {
+        return userFacade.addUser(user, file, key);
     }
 
     @PutMapping("/{id}/{key}")
-    public User updateUser(@PathVariable Long id, @RequestBody User user, @PathVariable String key) throws UserNotFoundException {
+    public UserDto updateUser(@PathVariable Long id, @RequestBody User user, @PathVariable String key) throws UserNotFoundException {
         return userFacade.updateUser(id, user, key);
     }
 

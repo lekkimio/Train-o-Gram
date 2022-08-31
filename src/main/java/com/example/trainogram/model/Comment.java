@@ -1,6 +1,7 @@
 package com.example.trainogram.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -26,6 +27,9 @@ public class Comment {
 
     private LocalDateTime commentPub;
 
-    private Long postId;
+
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
 
 }

@@ -3,13 +3,14 @@ package com.example.trainogram.controller;
 import com.example.trainogram.exception.UserNotFoundException;
 import com.example.trainogram.facade.FriendshipFacade;
 import com.example.trainogram.model.Friendship;
-import com.example.trainogram.model.User;
+import com.example.trainogram.model.dto.FriendshipDto;
+import com.example.trainogram.model.dto.UserDto;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/friendship")
+@RequestMapping("/users/friendship")
 public class FriendshipController {
 
     private final FriendshipFacade friendshipFacade;
@@ -18,19 +19,25 @@ public class FriendshipController {
         this.friendshipFacade = friendshipFacade;
     }
 
+
+    @GetMapping
+    public String getFriendsHome(){
+        return "sdsdasdsadsda";
+    }
+
     @GetMapping("/{userId}")
-    public List<User> getAllFriends(@PathVariable Long userId) {
+    public List<UserDto> getAllFriends(@PathVariable Long userId) {
         return friendshipFacade.findAllFriends(userId);
     }
 
     @GetMapping("/pending/{userId}")
-    public List<User> getAllRequests(@PathVariable Long userId) {
+    public List<UserDto> getAllRequests(@PathVariable Long userId) {
         return friendshipFacade.findAllRequests(userId);
     }
 
     @PostMapping("/{friendId}")
-    public Friendship addFriend(@PathVariable Long friendId) throws UserNotFoundException {
-       return friendshipFacade.addFriend(friendId);
+    public FriendshipDto addFriend(@PathVariable Long friendId) throws UserNotFoundException {
+        return friendshipFacade.addFriend(friendId);
     }
 
     @DeleteMapping("/{friendId}")

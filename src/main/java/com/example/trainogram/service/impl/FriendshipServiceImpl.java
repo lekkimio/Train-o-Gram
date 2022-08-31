@@ -19,11 +19,11 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public Friendship addFriend(User user, User friend) {
+    public Friendship addFriend(User owner, User friend) {
         Friendship newFriendship = new Friendship();
-        newFriendship.setOwner(user);
+        newFriendship.setOwner(owner);
         newFriendship.setFriend(friend);
-        Friendship friendship = friendshipRepository.findByUserAndFriend(friend, user);
+        Friendship friendship = friendshipRepository.findByUserAndFriend(friend,owner);
         if (friendship != null) {
             newFriendship.setStatus(RequestStatus.FRIEND.name());
             friendship.setStatus(RequestStatus.FRIEND.name());
@@ -31,8 +31,9 @@ public class FriendshipServiceImpl implements FriendshipService {
         } else {
             newFriendship.setStatus(RequestStatus.REQUEST.name());
         }
-
         return friendshipRepository.save(newFriendship);
+
+
     }
 
     @Override
