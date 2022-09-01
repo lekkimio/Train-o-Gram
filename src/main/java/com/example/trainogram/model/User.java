@@ -22,9 +22,7 @@ public class User {
 
     private String password;
 
-    @OneToOne
-    @JoinColumn(name = "avatar_ID")
-    private Picture avatar;
+    private String avatar;
 
     @Column(name = "role", columnDefinition = "VARCHAR(20)")
     private Role role;

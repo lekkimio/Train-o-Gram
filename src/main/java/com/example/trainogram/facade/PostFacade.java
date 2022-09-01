@@ -1,7 +1,9 @@
 package com.example.trainogram.facade;
 
 import com.example.trainogram.exception.PostException;
+import com.example.trainogram.exception.UserException;
 import com.example.trainogram.model.Post;
+import com.example.trainogram.model.SponsorPost;
 import com.example.trainogram.model.dto.PostDto;
 import com.example.trainogram.model.dto.SponsorPostDto;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +23,6 @@ public interface PostFacade {
 
     void deleteComment(Long post, Long comment);
 */
-    byte[] findPostPicture(Long id);
 
     SponsorPostDto addSponsorPost(String postText, MultipartFile file, Long sponsorId);
 
@@ -29,7 +30,7 @@ public interface PostFacade {
 
     List<SponsorPostDto> getAllSponsorPost(Long sponsorId);
 
-    SponsorPostDto updateSponsorPost(Long sponsorId);
+    SponsorPostDto updateSponsorPost(Long id, Post post);
 
-    SponsorPostDto deleteSponsorPost(Long sponsorId);
+    void deleteSponsorPost(Long sponsorId) throws UserException;
 }

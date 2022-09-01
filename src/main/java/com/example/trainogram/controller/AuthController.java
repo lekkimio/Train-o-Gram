@@ -1,10 +1,9 @@
 package com.example.trainogram.controller;
 
-import com.example.trainogram.exception.UserNotFoundException;
+import com.example.trainogram.exception.UserException;
 import com.example.trainogram.facade.UserFacade;
 import com.example.trainogram.model.User;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -37,8 +36,8 @@ public class AuthController {
     }*/
 
     @PostMapping("/signup")
-    public String signupProcess(@RequestBody User user, @RequestParam(required = false) String key) throws UserNotFoundException, IOException {
-        userFacade.addUser(user, null, key);
+    public String signupProcess(@RequestBody User user, @RequestParam(required = false) String key) throws UserException, IOException {
+        userFacade.addUser(user, key);
         return "redirect:localhost:8080/users";
     }
 

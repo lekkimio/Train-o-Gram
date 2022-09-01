@@ -1,6 +1,6 @@
 package com.example.trainogram.controller;
 
-import com.example.trainogram.exception.UserNotFoundException;
+import com.example.trainogram.exception.UserException;
 import com.example.trainogram.facade.UserFacade;
 import com.example.trainogram.model.User;
 import com.example.trainogram.model.dto.UserDto;
@@ -21,23 +21,23 @@ public class UserController {
     }
 
     @GetMapping()
-    public List<UserDto> getAllUsers() throws UserNotFoundException {
+    public List<UserDto> getAllUsers() throws UserException {
         return userFacade.findAllUsers();
     }
 
     @GetMapping("/{id}")
-    public UserDto getUser(@PathVariable Long id) throws UserNotFoundException {
+    public UserDto getUser(@PathVariable Long id) throws UserException {
         return userFacade.findUserById(id);
     }
 
     @PostMapping()
-    public UserDto addUser(@RequestBody User user, @RequestParam(required = false) String key, MultipartFile file) throws UserNotFoundException, IOException {
-        return userFacade.addUser(user, file, key);
+    public UserDto addUser(User user/*, MultipartFile file*/, @RequestParam(required = false) String key) throws UserException, IOException {
+        return userFacade.addUser(user,/* file,*/ key);
     }
 
-    @PutMapping("/{id}/{key}")
-    public UserDto updateUser(@PathVariable Long id, @RequestBody User user, @PathVariable String key) throws UserNotFoundException {
-        return userFacade.updateUser(id, user, key);
+    @PutMapping("/{id}")
+    public UserDto updateUser(@PathVariable Long id, User user, MultipartFile file, @RequestParam(required = false) String key) throws UserException {
+        return userFacade.updateUser(id, user, file ,key);
     }
 
     @DeleteMapping("/{id}")

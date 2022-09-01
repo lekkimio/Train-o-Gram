@@ -1,8 +1,6 @@
 package com.example.trainogram.facade;
 
-import com.example.trainogram.exception.UserNotFoundException;
-import com.example.trainogram.model.Friendship;
-import com.example.trainogram.model.User;
+import com.example.trainogram.exception.UserException;
 import com.example.trainogram.model.dto.FriendshipDto;
 import com.example.trainogram.model.dto.UserDto;
 
@@ -13,7 +11,7 @@ public interface FriendshipFacade {
 
     List<UserDto> findAllRequests(Long userId);
 
-    FriendshipDto addFriend(Long friendId) throws UserNotFoundException;
+    FriendshipDto addFriend(Long friendId) throws UserException;
 
-    void deleteFriend(Long friendId) throws UserNotFoundException;
+    void deleteFriend(Long friendId) throws UserException;
 }

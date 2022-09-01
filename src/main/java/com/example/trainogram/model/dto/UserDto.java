@@ -9,6 +9,6 @@ import java.io.Serializable;
 public class UserDto implements Serializable {
 
     private String username;
-    private PictureDto avatar;
+    private String avatar;
     private Role role;
 }

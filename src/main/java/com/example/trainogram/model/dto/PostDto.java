@@ -11,7 +11,7 @@ public class PostDto implements Serializable {
     private Long id;
     private Integer likes;
     private UserDto postAuthor;
-    private PictureDto postPicture;
+    private String postPicture;
     private String postText;
     private LocalDateTime pubDate;
     private List<CommentDto> comments;

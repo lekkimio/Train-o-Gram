@@ -1,6 +1,6 @@
 package com.example.trainogram.facade.impl;
 
-import com.example.trainogram.exception.UserNotFoundException;
+import com.example.trainogram.exception.UserException;
 import com.example.trainogram.facade.FriendshipFacade;
 import com.example.trainogram.model.Friendship;
 import com.example.trainogram.model.User;
@@ -48,7 +48,7 @@ public class FriendshipFacadeImpl implements FriendshipFacade {
     }
 
     @Override
-    public FriendshipDto addFriend(Long friendId) throws UserNotFoundException {
+    public FriendshipDto addFriend(Long friendId) throws UserException {
         User owner = userService.findAuthenticatedUser();
         User friend = userService.findUserById(friendId);
 
@@ -60,7 +60,7 @@ public class FriendshipFacadeImpl implements FriendshipFacade {
     }
 
     @Override
-    public void deleteFriend(Long friendId) throws UserNotFoundException {
+    public void deleteFriend(Long friendId) throws UserException {
         User owner = userService.findAuthenticatedUser();
         User friend = userService.findUserById(friendId);
         friendshipService.deleteFriend(owner,friend);

@@ -27,9 +27,7 @@ public class Post {
     @JoinColumn(name = "post_author_id")
     private User postAuthor;
 
-    @OneToOne
-    @JoinColumn(name = "post_picture_id")
-    private Picture postPicture;
+    private String postPicture;
 
     private String postText;
 
