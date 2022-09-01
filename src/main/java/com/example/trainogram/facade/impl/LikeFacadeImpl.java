@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class LikeFacadeImpl implements LikeFacade {
@@ -47,7 +48,7 @@ public class LikeFacadeImpl implements LikeFacade {
         User user = userService.findAuthenticatedUser();
         Post post = postService.findByPostId(postId);
         Like like = likeService.findLikeByUserAndPost(user, post);
-        if(!like.getUser().getId().equals(user.getId())) {
+        if(!Objects.equals(like.getUser().getId(), user.getId())) {
             post.setLikes(post.getLikes()+1);
             likeService.addLike(user, post);
             postService.updatePost(postId, post);

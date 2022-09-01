@@ -30,7 +30,7 @@ import java.util.Objects;
 @Slf4j
 public class PostFacadeImpl implements PostFacade {
 
-    private String folder = "D:\\Games\\Projects\\PictureUploadTest\\src\\main\\resources\\static\\";
+    private String folder = "E:\\Projects\\Java Learn\\Train-o-Gram\\src\\main\\resources\\static\\";
 
     private final PostService postService;
     private final UserService userService;
@@ -52,11 +52,11 @@ public class PostFacadeImpl implements PostFacade {
         Post post = new Post();
         post.setPostAuthor(user);
         post.setPostText(postText);
-
-        saveImage(file, user.getId());
-        post.setPostPicture(file.getOriginalFilename());
-
         Post savedPost = postService.addPost(post);
+
+        saveImage(file, user.getId(), savedPost.getId());
+        savedPost.setPostPicture(file.getOriginalFilename());
+        postService.updatePost(savedPost.getId(), savedPost);
 
         return mapToDto.map(savedPost, PostDto.class);
     }
@@ -109,15 +109,17 @@ public class PostFacadeImpl implements PostFacade {
         Post post = new Post();
         post.setPostText(postText);
         post.setPostAuthor(author);
+        Post savedPost = postService.addPost(post);
         try {
-            post.setPostPicture(saveImage(file, author.getId()));
+            savedPost.setPostPicture(saveImage(file, author.getId(), post.getId()));
+            postService.updatePost(savedPost.getId(), savedPost);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         SponsorPost sponsorPost;
         try {
-            sponsorPost = sponsorPostService.addSponsorPost(postService.addPost(post), userService.findUserById(sponsorId));
+            sponsorPost = sponsorPostService.addSponsorPost(savedPost, userService.findUserById(sponsorId));
         } catch (UserException e) {
             throw new RuntimeException(e);
         }
@@ -165,11 +167,21 @@ public class PostFacadeImpl implements PostFacade {
         }
     }
 
-    protected String saveImage(MultipartFile file, Long userId) throws IOException {
+    protected String saveImage(MultipartFile file, Long userId, Long postId) throws IOException {
         byte[] bytes = file.getBytes();
-        Path path = Paths.get(folder+userId+"\\post\\"+file.getOriginalFilename());
-        Files.write(path,bytes);
-        return path.toString();
+        String userPath = folder+userId.toString()+"\\post\\"+postId;
+        File dir = new File(userPath);
+
+        boolean isDirectoryCreated = dir.mkdir();
+
+        if(isDirectoryCreated)
+            System.out.println("Directory created successfully");
+        else
+            System.out.println("Directory was not created successfully");
+
+        Path path = Paths.get(userPath + File.separator + file.getOriginalFilename());
+        Files.write(path, bytes);
+        return file.getOriginalFilename();
     }
 
 

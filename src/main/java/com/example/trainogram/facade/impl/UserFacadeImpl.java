@@ -33,7 +33,7 @@ public class UserFacadeImpl implements UserFacade {
     @Value("${admin.key}")
     private String adminKey;
 
-    private String folder = "D:\\Games\\Projects\\PictureUploadTest\\src\\main\\resources\\static\\";
+    private String folder = "E:\\Projects\\Java Learn\\Train-o-Gram\\src\\main\\resources\\static\\";
 
     public UserFacadeImpl(UserService userService, ModelMapper mapToDto) {
         this.userService = userService;
@@ -104,12 +104,20 @@ public class UserFacadeImpl implements UserFacade {
 
 
     protected String saveImage(MultipartFile file, Long userId) throws IOException {
+
         byte[] bytes = file.getBytes();
-        String userPath = folder+userId+File.separator;
-        File file1 = new File(userPath);
-        file1.mkdir();
-        Path path = Paths.get(userPath+file.getOriginalFilename());
-        Files.write(path,bytes);
-        return path.toString();
+        String userPath = folder+userId.toString();
+        File dir = new File(userPath);
+
+        boolean isDirectoryCreated = dir.mkdir();
+
+        if(isDirectoryCreated)
+            System.out.println("Directory created successfully");
+        else
+            System.out.println("Directory was not created successfully");
+
+        Path path = Paths.get(userPath + File.separator + file.getOriginalFilename());
+        Files.write(path, bytes);
+        return file.getOriginalFilename();
     }
 }
