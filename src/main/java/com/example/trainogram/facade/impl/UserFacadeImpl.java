@@ -6,6 +6,8 @@ import com.example.trainogram.model.Role;
 import com.example.trainogram.model.User;
 import com.example.trainogram.model.dto.UserDto;
 import com.example.trainogram.service.UserService;
+
+import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,7 +36,7 @@ public class UserFacadeImpl implements UserFacade {
     @Value("${admin.key}")
     private String adminKey;
 
-    private String folder = "D:\\Games\\Projects\\PictureUploadTest\\src\\main\\resources\\static\\";
+    private String folder = "lstatic\\";
 
     public UserFacadeImpl(UserService userService, ModelMapper mapToDto) {
         this.userService = userService;
@@ -61,7 +64,24 @@ public class UserFacadeImpl implements UserFacade {
     }
 
     @Override
-    public UserDto addUser(User user, String key) throws UserException, IOException {
+    public byte[] getAvatar(Long id) throws UserException {
+
+        User user = userService.findUserById(id);
+
+        String path = "/static/"+id+"/"+user.getAvatar();
+        InputStream in = getClass().getResourceAsStream(path);
+        assert in != null;
+        byte[] result = null;
+        try {
+            result = IOUtils.toByteArray(in);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    public UserDto addUser(User user, String key) throws UserException {
         if (Objects.equals(key, adminKey)){
             user.setRole(Role.ADMIN);
         } else {
@@ -106,8 +126,7 @@ public class UserFacadeImpl implements UserFacade {
     protected String saveImage(MultipartFile file, Long userId) throws IOException {
         byte[] bytes = file.getBytes();
         String userPath = folder+userId+File.separator;
-        File file1 = new File(userPath);
-        file1.mkdir();
+        new File(userPath).mkdir();
         Path path = Paths.get(userPath+file.getOriginalFilename());
         Files.write(path,bytes);
         return path.toString();

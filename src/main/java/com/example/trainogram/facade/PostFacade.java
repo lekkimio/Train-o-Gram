@@ -24,7 +24,7 @@ public interface PostFacade {
     void deleteComment(Long post, Long comment);
 */
 
-    SponsorPostDto addSponsorPost(String postText, MultipartFile file, Long sponsorId);
+    SponsorPostDto addSponsorPost(String postText, MultipartFile file, Long sponsorId) throws IOException;
 
     SponsorPostDto getSponsorPost(Long sponsorPostId);
 
@@ -33,4 +33,6 @@ public interface PostFacade {
     SponsorPostDto updateSponsorPost(Long id, Post post);
 
     void deleteSponsorPost(Long sponsorId) throws UserException;
+
+    byte[] getPostPicture(Long id);
 }

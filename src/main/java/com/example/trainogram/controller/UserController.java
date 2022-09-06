@@ -4,10 +4,15 @@ import com.example.trainogram.exception.UserException;
 import com.example.trainogram.facade.UserFacade;
 import com.example.trainogram.model.User;
 import com.example.trainogram.model.dto.UserDto;
+import org.apache.commons.io.IOUtils;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @RestController
@@ -46,4 +51,19 @@ public class UserController {
     }
 
 
+    @ResponseBody
+    @GetMapping(value = "/avatar/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public byte[] showPicture(@PathVariable Long id) throws UserException, IOException {
+        /*String path = "/static/1/2.jpg";
+        InputStream in = this.getClass().getResourceAsStream(path);
+        assert in != null;
+        byte[] result = null;
+        try {
+            result = IOUtils.toByteArray(in);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;*/
+        return  userFacade.getAvatar(id);
+    }
 }

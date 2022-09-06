@@ -37,14 +37,23 @@ public class LikeController {
         return likeFacade.findAllPostsLikedByUser();
     }
 
-    @PostMapping("/{postId}")
+    @PostMapping("/post/{postId}")
     public void addLikeToPost(@PathVariable Long postId) throws LikeException {
         likeFacade.addLikeToPost(postId);
     }
 
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("/post/{postId}")
     public void deleteLikeFromPost(@PathVariable Long postId) {
         likeFacade.deleteLikeFromPost(postId);
     }
 
+    @PostMapping("/comment/{commentId}")
+    public void addLikeToComment(@PathVariable Long commentId) throws LikeException {
+        likeFacade.addLikeToComment(commentId);
+    }
+
+    @DeleteMapping("/comment/{commentId}")
+    public void deleteLikeFromComment(@PathVariable Long commentId) {
+        likeFacade.deleteLikeFromComment(commentId);
+    }
 }

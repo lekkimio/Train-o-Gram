@@ -47,7 +47,7 @@ public class PostServiceImpl implements PostService {
         if (!post.getPostText().isEmpty() || post.getPostPicture() != null) {
             postToUpdate.setPostText(post.getPostText());
             postToUpdate.setPostPicture(post.getPostPicture());
-            postToUpdate.setLikes(post.getLikes());
+//            postToUpdate.setLikes(post.getLikes());
         }
 
         return postRepository.save(postToUpdate);

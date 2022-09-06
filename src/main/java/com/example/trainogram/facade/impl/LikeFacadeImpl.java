@@ -91,4 +91,18 @@ public class LikeFacadeImpl implements LikeFacade {
         Type listType = new TypeToken<List<PostDto>>(){}.getType();
         return mapToDto.map(posts,listType);
     }
+
+    @Override
+    public void deleteLikeFromComment(Long commentId) {
+
+
+
+
+
+    }
+
+    @Override
+    public void addLikeToComment(Long commentId) {
+
+    }
 }

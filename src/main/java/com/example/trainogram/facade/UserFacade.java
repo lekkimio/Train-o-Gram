@@ -20,4 +20,6 @@ public interface UserFacade {
     UserDto findUserById(Long id) throws UserException;
 
     List<UserDto> findAllUsers() throws UserException;
+
+    byte[] getAvatar(Long id) throws UserException, IOException;
 }

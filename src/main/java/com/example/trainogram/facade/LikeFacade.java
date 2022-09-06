@@ -20,4 +20,8 @@ public interface LikeFacade {
     List<UserDto> findUserByPostId(Long postId);
 
     List<PostDto> findAllPostsLikedByUser();
+
+    void deleteLikeFromComment(Long commentId);
+
+    void addLikeToComment(Long commentId);
 }

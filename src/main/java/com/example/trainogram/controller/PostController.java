@@ -35,10 +35,10 @@ public class PostController {
         return postFacade.findByPostId(id);
     }
 
-//    @GetMapping(value = "/image/{id}", produces = MediaType.IMAGE_PNG_VALUE)
-//    public @ResponseBody byte[] getPostPicture(@PathVariable Long id) {
-//        return postFacade.findPostPicture(id);
-//    }
+    @GetMapping(value = "/image/{id}", produces = MediaType.IMAGE_PNG_VALUE)
+    public @ResponseBody byte[] getPostPicture(@PathVariable Long id) {
+        return postFacade.getPostPicture(id);
+    }
 
     @PostMapping()
     public PostDto addPost(@RequestParam String postText, MultipartFile file) throws IOException {
@@ -73,7 +73,7 @@ public class PostController {
         return postFacade.getAllSponsorPost(sponsorId);     }
 
     @PostMapping("/sponsor")
-    public SponsorPostDto addSponsorPost(@RequestParam String postText, MultipartFile file, Long sponsorId){
+    public SponsorPostDto addSponsorPost(@RequestParam String postText,@RequestParam MultipartFile file, Long sponsorId) throws IOException {
         return postFacade.addSponsorPost(postText,file, sponsorId);
     }
 

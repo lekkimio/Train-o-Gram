@@ -10,6 +10,7 @@ import com.example.trainogram.model.dto.PostDto;
 import com.example.trainogram.model.dto.SponsorPostDto;
 import com.example.trainogram.service.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,7 +32,7 @@ import java.util.Objects;
 @Slf4j
 public class PostFacadeImpl implements PostFacade {
 
-    private String folder = "D:\\Games\\Projects\\PictureUploadTest\\src\\main\\resources\\static\\";
+    private String folder = "D:\\Games\\Projects\\Train-o-Gram\\src\\main\\resources\\static\\";
 
     private final PostService postService;
     private final UserService userService;
@@ -48,7 +50,7 @@ public class PostFacadeImpl implements PostFacade {
 
     @Override
     public PostDto addPost(String postText, MultipartFile file) throws IOException {
-        User user = userService.findAuthenticatedUser();
+        /*User user = userService.findAuthenticatedUser();
         Post post = new Post();
         post.setPostAuthor(user);
         post.setPostText(postText);
@@ -57,6 +59,18 @@ public class PostFacadeImpl implements PostFacade {
         post.setPostPicture(file.getOriginalFilename());
 
         Post savedPost = postService.addPost(post);
+
+        return mapToDto.map(savedPost, PostDto.class);*/
+
+        User user = userService.findAuthenticatedUser();
+        Post post = new Post();
+        post.setPostAuthor(user);
+        post.setPostText(postText);
+        Post savedPost = postService.addPost(post);
+
+        saveImage(file, user.getId(), savedPost.getId());
+        savedPost.setPostPicture(file.getOriginalFilename());
+        postService.updatePost(savedPost.getId(), savedPost);
 
         return mapToDto.map(savedPost, PostDto.class);
     }
@@ -104,8 +118,8 @@ public class PostFacadeImpl implements PostFacade {
 
 
     @Override
-    public SponsorPostDto addSponsorPost(String postText, MultipartFile file, Long sponsorId) {
-        User author = userService.findAuthenticatedUser();
+    public SponsorPostDto addSponsorPost(String postText, MultipartFile file, Long sponsorId) throws IOException {
+        /*User author = userService.findAuthenticatedUser();
         Post post = new Post();
         post.setPostText(postText);
         post.setPostAuthor(author);
@@ -118,6 +132,24 @@ public class PostFacadeImpl implements PostFacade {
         SponsorPost sponsorPost;
         try {
             sponsorPost = sponsorPostService.addSponsorPost(postService.addPost(post), userService.findUserById(sponsorId));
+        } catch (UserException e) {
+            throw new RuntimeException(e);
+        }
+
+        return mapToDto.map(sponsorPost, SponsorPostDto.class);*/
+
+        User author = userService.findAuthenticatedUser();
+        Post post = new Post();
+        post.setPostText(postText);
+        post.setPostAuthor(author);
+        Post savedPost = postService.addPost(post);
+        saveImage(file, author.getId(), savedPost.getId());
+            savedPost.setPostPicture(file.getOriginalFilename());
+            postService.updatePost(savedPost.getId(), savedPost);
+
+        SponsorPost sponsorPost;
+        try {
+            sponsorPost = sponsorPostService.addSponsorPost(savedPost, userService.findUserById(sponsorId));
         } catch (UserException e) {
             throw new RuntimeException(e);
         }
@@ -165,9 +197,28 @@ public class PostFacadeImpl implements PostFacade {
         }
     }
 
-    protected String saveImage(MultipartFile file, Long userId) throws IOException {
+    @Override
+    public byte[] getPostPicture(Long id) {
+        Post post = postService.findByPostId(id);
+
+        String path = "/static/"+post.getPostAuthor().getId()+"/post/"+id+"/"+post.getPostPicture();
+        System.out.println(path);
+        InputStream in = getClass().getResourceAsStream(path);
+        assert in != null;
+        byte[] result = null;
+        try {
+            result = IOUtils.toByteArray(in);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    protected String saveImage(MultipartFile file, Long userId, Long postId) throws IOException {
         byte[] bytes = file.getBytes();
-        Path path = Paths.get(folder+userId+"\\post\\"+file.getOriginalFilename());
+        String userPath = folder+userId.toString()+"\\post\\"+postId;
+        new File(userPath).mkdirs();
+        Path path = Paths.get(userPath+File.separator+file.getOriginalFilename());
         Files.write(path,bytes);
         return path.toString();
     }
