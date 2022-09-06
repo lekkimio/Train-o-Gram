@@ -45,7 +45,6 @@ public class UserController {
         return userFacade.updateUser(id, user, file ,key);
     }
 
-
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         userFacade.deleteUser(id);
