@@ -4,6 +4,7 @@ import com.example.trainogram.model.Comment;
 import com.example.trainogram.model.User;
 import com.example.trainogram.repository.CommentRepository;
 import com.example.trainogram.service.CommentService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

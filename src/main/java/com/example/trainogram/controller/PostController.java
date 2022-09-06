@@ -41,7 +41,7 @@ public class PostController {
     }
 
     @PostMapping()
-    public PostDto addPost(@RequestParam String postText, MultipartFile file) throws IOException {
+    public PostDto addPost(@RequestParam String postText,@RequestParam MultipartFile file) throws IOException {
         return postFacade.addPost(postText, file);
     }
 

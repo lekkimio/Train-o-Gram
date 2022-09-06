@@ -17,7 +17,7 @@ public class CustomUserDetails implements UserDetails {
     private final String password;
     private final List<SimpleGrantedAuthority> authorities;
 
-    public CustomUserDetails(User user, String username, String password, List<SimpleGrantedAuthority> authorities) {
+    public CustomUserDetails(String username, String password, List<SimpleGrantedAuthority> authorities) {
 
         this.username = username;
         this.password = password;
