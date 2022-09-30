@@ -6,27 +6,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
 @Builder
-public class User {
+public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
+    private String message;
 
-    private String password;
+    private LocalDateTime dateOfReceiving;
 
-    private String avatar;
+    private NotificationStatus status;
 
-    @Column(name = "role", columnDefinition = "VARCHAR(20)")
-    @Enumerated(value = EnumType.STRING)
-    private Role role;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

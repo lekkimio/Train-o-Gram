@@ -47,7 +47,7 @@ public class SponsorPostServiceImpl implements SponsorPostService {
     }
 
     @Override
-    public SponsorPost updateSponsorPost(SponsorPost sponsorPost) {
-        return sponsorPostRepository.save(sponsorPost);
+    public void updateSponsorPost(SponsorPost sponsorPost) {
+        sponsorPostRepository.save(sponsorPost);
     }
 }

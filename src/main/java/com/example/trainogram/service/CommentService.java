@@ -16,4 +16,8 @@ public interface CommentService {
     void update(Comment comment);
 
     Comment findCommentById(Long commentId);
+
+    void updateCommentLikeCount(Comment comment);
+
+    void updateComment(Comment commentToUpdate);
 }

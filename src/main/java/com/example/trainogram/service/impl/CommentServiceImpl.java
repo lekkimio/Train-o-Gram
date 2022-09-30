@@ -44,4 +44,14 @@ public class CommentServiceImpl implements CommentService {
     public Comment findCommentById(Long commentId) {
         return commentRepository.findById(commentId).orElseThrow(()-> new IllegalArgumentException("Comment not found"));
     }
+
+    @Override
+    public void updateComment(Comment comment) {
+        commentRepository.save(comment);
+    }
+
+    @Override
+    public void updateCommentLikeCount(Comment comment) {
+        commentRepository.save(comment);
+    }
 }

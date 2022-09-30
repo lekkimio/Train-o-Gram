@@ -1,4 +1,4 @@
-package com.example.trainogram.model.dto;
+package com.example.trainogram.model.dto.response;
 
 import lombok.Data;
 
@@ -7,12 +7,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class PostDto implements Serializable {
+public class PostResponseDto implements Serializable {
     private Long id;
     private Integer likes;
-    private UserDto postAuthor;
+    private UserResponseDto postAuthor;
     private String postPicture;
     private String postText;
     private LocalDateTime pubDate;
-    private List<CommentDto> comments;
+    private List<CommentResponseDto> comments;
 }

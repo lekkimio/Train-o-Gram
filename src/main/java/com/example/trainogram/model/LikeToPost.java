@@ -11,22 +11,22 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
 @Builder
-public class User {
+@Table(name = "post_likes")
+public class LikeToPost {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "post_ID")
+    private Post post;
 
-    private String password;
 
-    private String avatar;
-
-    @Column(name = "role", columnDefinition = "VARCHAR(20)")
-    @Enumerated(value = EnumType.STRING)
-    private Role role;
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "user_ID")
+    private User user;
 
 }

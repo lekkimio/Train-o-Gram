@@ -1,38 +1,40 @@
 package com.example.trainogram.facade;
 
-import com.example.trainogram.exception.PostException;
-import com.example.trainogram.exception.UserException;
-import com.example.trainogram.model.Post;
-import com.example.trainogram.model.SponsorPost;
-import com.example.trainogram.model.dto.PostDto;
-import com.example.trainogram.model.dto.SponsorPostDto;
+import com.example.trainogram.exception.CustomException;
+import com.example.trainogram.model.dto.response.PostResponseDto;
+import com.example.trainogram.model.dto.response.SponsorPostResponseDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
 public interface PostFacade {
-    PostDto addPost(String postText, MultipartFile file) throws IOException;
-    void deletePost(Long id) throws PostException;
+    PostResponseDto createPost(String postText, MultipartFile file) throws IOException;
+    void deletePost(Long id) throws CustomException;
 
-    List<PostDto> findAllPosts();
-    PostDto findByPostId(Long id);
-    PostDto updatePost(Long id, Post post) throws PostException;
+    List<PostResponseDto> getAllUserPosts();
+    PostResponseDto getUserPostById(Long id);
 
-    /*void addComment(Long postId, Comment comment);
+    /*PostResponseDto updatePost(Long id, Post post) throws PostException;
+
+    void addComment(Long postId, Comment comment);
 
     void deleteComment(Long post, Long comment);
-*/
+    */
 
-    SponsorPostDto addSponsorPost(String postText, MultipartFile file, Long sponsorId) throws IOException;
+    SponsorPostResponseDto createSponsorPost(String postText, MultipartFile file, Long sponsorId) throws IOException, CustomException;
 
-    SponsorPostDto getSponsorPost(Long sponsorPostId);
+    SponsorPostResponseDto getSponsorPost(Long sponsorPostId);
 
-    List<SponsorPostDto> getAllSponsorPost(Long sponsorId);
+    List<SponsorPostResponseDto> getAllSponsorPost(Long sponsorId);
 
-    SponsorPostDto updateSponsorPost(Long id, Post post);
+//    void updateSponsorPost(Long id, Post post);
 
-    void deleteSponsorPost(Long sponsorId) throws UserException;
+    void deleteSponsorPost(Long sponsorId) throws CustomException;
 
     byte[] getPostPicture(Long id);
+
+    void updatePost(Long id, String postText, MultipartFile newFile) throws IOException, CustomException;
+
+    void updateSponsorPost(Long sponsorPostId, String postText, MultipartFile file) throws IOException;
 }

@@ -1,20 +1,22 @@
 package com.example.trainogram.facade.impl;
 
-import com.example.trainogram.exception.PostException;
-import com.example.trainogram.exception.UserException;
+import com.example.trainogram.exception.CustomException;
 import com.example.trainogram.facade.PostFacade;
 import com.example.trainogram.model.Post;
 import com.example.trainogram.model.SponsorPost;
 import com.example.trainogram.model.User;
-import com.example.trainogram.model.dto.PostDto;
-import com.example.trainogram.model.dto.SponsorPostDto;
-import com.example.trainogram.service.*;
+import com.example.trainogram.model.dto.response.PostResponseDto;
+import com.example.trainogram.model.dto.response.SponsorPostResponseDto;
+import com.example.trainogram.service.CommentService;
+import com.example.trainogram.service.PostService;
+import com.example.trainogram.service.SponsorPostService;
+import com.example.trainogram.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,7 +51,7 @@ public class PostFacadeImpl implements PostFacade {
     }
 
     @Override
-    public PostDto addPost(String postText, MultipartFile file) throws IOException {
+    public PostResponseDto createPost(String postText, MultipartFile file) throws IOException {
         /*User user = userService.findAuthenticatedUser();
         Post post = new Post();
         post.setPostAuthor(user);
@@ -63,62 +65,65 @@ public class PostFacadeImpl implements PostFacade {
         return mapToDto.map(savedPost, PostDto.class);*/
 
         User user = userService.findAuthenticatedUser();
-        Post post = new Post();
+        /*Post post = new Post();
         post.setPostAuthor(user);
-        post.setPostText(postText);
-        Post savedPost = postService.addPost(post);
+        post.setPostText(postText);*/
+        Post savedPost = postService.addPost(Post.builder()
+                .postAuthor(user)
+                .postText(postText)
+                .likes(0)
+                .build()
+        );
 
         saveImage(file, user.getId(), savedPost.getId());
         savedPost.setPostPicture(file.getOriginalFilename());
-        postService.updatePost(savedPost.getId(), savedPost);
+        postService.updatePost(savedPost);
 
-        return mapToDto.map(savedPost, PostDto.class);
+        return mapToDto.map(savedPost, PostResponseDto.class);
     }
 
     @Override
-    public void deletePost(Long id) throws PostException {
+    public void deletePost(Long id) throws CustomException {
         User user = userService.findAuthenticatedUser();
         Post post = postService.findByPostId(id);
             if (Objects.equals(post.getPostAuthor().getId(), user.getId())) {
                 postService.deletePost(id);
             } else {
-                throw new PostException("You can't delete this post");
+                throw new CustomException("You can't delete this post", HttpStatus.UNAUTHORIZED);
             }
     }
 
     @Override
-    public List<PostDto> findAllPosts() {
-
+    public List<PostResponseDto> getAllUserPosts() {
 
         User user = userService.findAuthenticatedUser();
-
         List<Post> posts = postService.findAllPosts(user.getId());
-        Type listType = new TypeToken<List<PostDto>>(){}.getType();
+        Type listType = new TypeToken<List<PostResponseDto>>(){}.getType();
         return mapToDto.map(posts,listType);
     }
 
     @Override
-    public PostDto findByPostId(Long id) {
+    public PostResponseDto getUserPostById(Long id) {
 
-        return mapToDto.map(postService.findByPostId(id),PostDto.class);
+        return mapToDto.map(postService.findByPostId(id),PostResponseDto.class);
     }
 
-    @Override
-    public PostDto updatePost(Long id, Post post) throws PostException {
+    /*@Override
+    public PostResponseDto updatePost(Long id, Post post) throws PostException {
         Post postToUpdate = postService.findByPostId(id);
         User author = postToUpdate.getPostAuthor();
         User editor = userService.findAuthenticatedUser();
 
         if (Objects.equals(author.getId(), editor.getId())) {
-            return mapToDto.map(postService.updatePost(id, post), PostDto.class);
+            return mapToDto.map(postService.updatePost(id, post), PostResponseDto.class);
         } else {
             throw new PostException("You are not allowed to edit this post");
         }
-    }
+    }*/
 
 
     @Override
-    public SponsorPostDto addSponsorPost(String postText, MultipartFile file, Long sponsorId) throws IOException {
+    public SponsorPostResponseDto createSponsorPost(String postText, MultipartFile file, Long sponsorId) throws IOException, CustomException {
         /*User author = userService.findAuthenticatedUser();
         Post post = new Post();
         post.setPostText(postText);
@@ -145,44 +150,44 @@ public class PostFacadeImpl implements PostFacade {
         Post savedPost = postService.addPost(post);
         saveImage(file, author.getId(), savedPost.getId());
             savedPost.setPostPicture(file.getOriginalFilename());
-            postService.updatePost(savedPost.getId(), savedPost);
+            postService.updatePost(savedPost);
 
         SponsorPost sponsorPost;
         try {
             sponsorPost = sponsorPostService.addSponsorPost(savedPost, userService.findUserById(sponsorId));
-        } catch (UserException e) {
-            throw new RuntimeException(e);
+        } catch (CustomException e) {
+            throw new CustomException("Post not found", HttpStatus.NOT_FOUND);
         }
 
-        return mapToDto.map(sponsorPost, SponsorPostDto.class);
+        return mapToDto.map(sponsorPost, SponsorPostResponseDto.class);
     }
 
     @Override
-    public SponsorPostDto getSponsorPost(Long sponsorPostId) {
+    public SponsorPostResponseDto getSponsorPost(Long sponsorPostId) {
         SponsorPost sponsorPost = sponsorPostService.findBySponsorPostId(sponsorPostId);
-        return mapToDto.map(sponsorPost,SponsorPostDto.class);
+        return mapToDto.map(sponsorPost,SponsorPostResponseDto.class);
     }
 
     @Override
-    public List<SponsorPostDto> getAllSponsorPost(Long sponsorId) {
+    public List<SponsorPostResponseDto> getAllSponsorPost(Long sponsorId) {
 
         List<SponsorPost> posts = sponsorPostService.findAllSponsorPostsByUser(sponsorId);
-        Type listType = new TypeToken<List<SponsorPostDto>>(){}.getType();
+        Type listType = new TypeToken<List<SponsorPostResponseDto>>(){}.getType();
         return mapToDto.map(posts,listType);
     }
 
-    @Override
-    public SponsorPostDto updateSponsorPost(Long id, Post post) {
+    /*@Override
+    public void updateSponsorPost(Long id, Post post) {
         SponsorPost sponsorPost = sponsorPostService.findBySponsorPostId(id);
-        Post newPost = sponsorPostService.findBySponsorPostId(id).getPost();
-        newPost.setPostText(post.getPostText());
-        sponsorPost.setPost(newPost);
+        if (post.getPostText() != null) {
+            sponsorPost.getPost().setPostText(post.getPostText());
+        }
 
-        return mapToDto.map(sponsorPostService.updateSponsorPost(sponsorPost), SponsorPostDto.class);
-    }
+       sponsorPostService.updateSponsorPost(sponsorPost);
+    }*/
 
     @Override
-    public void deleteSponsorPost(Long sponsorId) throws UserException {
+    public void deleteSponsorPost(Long sponsorId) throws CustomException {
         Post post = sponsorPostService.findBySponsorPostId(sponsorId).getPost();
 
         User user = userService.findAuthenticatedUser();
@@ -193,7 +198,7 @@ public class PostFacadeImpl implements PostFacade {
         postService.deletePost(post.getId());
 
         }else {
-            throw new UserException("You can't delete this");
+            throw new CustomException("You can't delete this", HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -214,15 +219,45 @@ public class PostFacadeImpl implements PostFacade {
         return result;
     }
 
+    @Override
+    public void updatePost(Long id, String postText, MultipartFile newFile) throws IOException, CustomException {
+       Post post = postService.findByPostId(id);
+       User user = userService.findAuthenticatedUser();
+        if (user.equals(post.getPostAuthor())) {
+            if (newFile != null){
+                post.setPostPicture(saveImage(newFile, user.getId(), post.getId()));
+            }
+            if (!postText.isEmpty()) {
+                post.setPostText(postText);
+            }
+            postService.updatePost(post);
+        } else {
+            throw new CustomException("You cant edit this post", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
     protected String saveImage(MultipartFile file, Long userId, Long postId) throws IOException {
         byte[] bytes = file.getBytes();
         String userPath = folder+userId.toString()+"\\post\\"+postId;
         new File(userPath).mkdirs();
         Path path = Paths.get(userPath+File.separator+file.getOriginalFilename());
         Files.write(path,bytes);
-        return path.toString();
+        return file.getOriginalFilename();
     }
 
-
+    @Override
+    public void updateSponsorPost(Long sponsorPostId, String postText, MultipartFile file) throws IOException {
+        SponsorPost sponsorPost = sponsorPostService.findBySponsorPostId(sponsorPostId);
+        User user = userService.findAuthenticatedUser();
+        if (user.equals(sponsorPost.getPost().getPostAuthor())){
+            if (postText != null) {
+                sponsorPost.getPost().setPostText(postText);
+            }
+            if (!file.isEmpty()) {
+                sponsorPost.getPost().setPostPicture(saveImage(file, user.getId(), sponsorPost.getPost().getId()));
+            }
+            sponsorPostService.updateSponsorPost(sponsorPost);
+        }
+    }
 }
 

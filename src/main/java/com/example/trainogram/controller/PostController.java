@@ -1,11 +1,9 @@
 package com.example.trainogram.controller;
 
-import com.example.trainogram.exception.PostException;
-import com.example.trainogram.exception.UserException;
+import com.example.trainogram.exception.CustomException;
 import com.example.trainogram.facade.PostFacade;
-import com.example.trainogram.model.Post;
-import com.example.trainogram.model.dto.PostDto;
-import com.example.trainogram.model.dto.SponsorPostDto;
+import com.example.trainogram.model.dto.response.PostResponseDto;
+import com.example.trainogram.model.dto.response.SponsorPostResponseDto;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,10 +12,9 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users/posts")
+@RequestMapping("/users/post")
 public class PostController {
 
-    //TODO: pictures to post required, saving / getting post image
 
     private final PostFacade postFacade;
 
@@ -26,14 +23,15 @@ public class PostController {
     }
 
     @GetMapping()
-    public List<PostDto> getAllUserPost() {
-        return postFacade.findAllPosts();
+    public List<PostResponseDto> getAllUserPost() {
+        return postFacade.getAllUserPosts();
     }
 
     @GetMapping("/{id}")
-    public PostDto getUserPost(@PathVariable Long id) {
-        return postFacade.findByPostId(id);
+    public PostResponseDto getUserPost(@PathVariable Long id) {
+        return postFacade.getUserPostById(id);
     }
+
 
     @GetMapping(value = "/image/{id}", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody byte[] getPostPicture(@PathVariable Long id) {
@@ -41,50 +39,65 @@ public class PostController {
     }
 
     @PostMapping()
-    public PostDto addPost(@RequestParam String postText,@RequestParam MultipartFile file) throws IOException {
-        return postFacade.addPost(postText, file);
-    }
-
-    @PutMapping("/{id}")
-    public PostDto updatePost(@PathVariable Long id, @RequestBody Post post) throws PostException {
-        return postFacade.updatePost(id, post);
+    public void createPost(@RequestParam String postText,
+                           @RequestParam MultipartFile file) throws IOException {
+        postFacade.createPost(postText, file);
     }
 
     @DeleteMapping("/{id}")
-    public void deletePost(@PathVariable Long id) throws PostException {
+    public void deletePost(@PathVariable Long id) throws CustomException {
         postFacade.deletePost(id);
     }
 
+    @PutMapping("/{id}")
+    public void updatePost(@RequestParam(required = false) String postText,
+                           @RequestParam(required = false) MultipartFile file,
+                           @PathVariable Long id) throws IOException, CustomException {
+        postFacade.updatePost(id, postText, file);
+    }
 
     /**
     sponsor posts
     **/
 
-
-    @GetMapping("/sponsorpost/{sponsorPostId}")
-    public SponsorPostDto getSponsorPost(@PathVariable Long sponsorPostId){
-        //find Post by PostId
+    @GetMapping("/sponsor/{sponsorPostId}")
+    public SponsorPostResponseDto getSponsorPost(@PathVariable Long sponsorPostId){
+        //find Post by SponsorPostId
         return postFacade.getSponsorPost(sponsorPostId);
     }
 
-    @GetMapping("/sponsor/{sponsorId}")
-    public List<SponsorPostDto> getAllSponsorPost(@PathVariable Long sponsorId){
-        //search all post by Sponsor User
-        return postFacade.getAllSponsorPost(sponsorId);     }
+
 
     @PostMapping("/sponsor")
-    public SponsorPostDto addSponsorPost(@RequestParam String postText,@RequestParam MultipartFile file, Long sponsorId) throws IOException {
-        return postFacade.addSponsorPost(postText,file, sponsorId);
+    public void createSponsorPost(@RequestParam String postText,
+                                  @RequestParam Long sponsorId,
+                                  @RequestParam MultipartFile file) throws IOException, CustomException{
+        postFacade.createSponsorPost(postText,file, sponsorId);
     }
 
-    @PutMapping("/sponsor/{id}")
-    public SponsorPostDto updateSponsorPost(@PathVariable Long id, @RequestBody Post post){
-        return postFacade.updateSponsorPost(id, post);
+    @PutMapping("/sponsor/{sponsorPostId}")
+    public void updateSponsorPost(@PathVariable Long sponsorPostId,
+                                  @RequestParam String postText,
+                                  @RequestParam MultipartFile file) throws IOException {
+        postFacade.updateSponsorPost(sponsorPostId, postText, file);
     }
 
     @DeleteMapping("/sponsor/{sponsorId}")
-    public void deleteSponsorPost(@PathVariable Long sponsorId) throws UserException {
+    public void deleteSponsorPost(@PathVariable Long sponsorId) throws CustomException {
          postFacade.deleteSponsorPost(sponsorId);
     }
+
+
+    /*@PutMapping("/{id}")
+    public void updatePost(@PathVariable Long id, @RequestBody Post post) throws PostException {
+        postFacade.updatePost(id, post);
+    }*/
+
+
+    /* @GetMapping("/sponsor-user/{sponsorId}")
+    public List<SponsorPostResponseDto> getAllSponsorPost(@PathVariable Long sponsorId){
+        //search all post by Sponsor User
+        return postFacade.getAllSponsorPost(sponsorId);
+    }*/
 
 }

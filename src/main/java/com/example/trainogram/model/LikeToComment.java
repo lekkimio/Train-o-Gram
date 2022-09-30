@@ -1,6 +1,10 @@
 package com.example.trainogram.model;
 
+import com.example.trainogram.model.Comment;
+import com.example.trainogram.model.Post;
+import com.example.trainogram.model.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,8 +14,9 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "likes")
-public class Like {
+@Builder
+@Table(name = "comment_likes")
+public class LikeToComment {
 
 
     @Id
@@ -19,8 +24,8 @@ public class Like {
     private Long id;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "post_ID")
-    private Post post;
+    @JoinColumn(name = "comment_ID")
+    private Comment comment;
 
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)

@@ -20,5 +20,5 @@ public interface SponsorPostService {
     SponsorPost findBySponsorPostId(Long id);
 
 
-    SponsorPost updateSponsorPost(SponsorPost sponsorPost);
+    void updateSponsorPost(SponsorPost sponsorPost);
 }

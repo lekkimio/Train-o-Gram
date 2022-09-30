@@ -1,9 +1,7 @@
 package com.example.trainogram.service.impl;
 
-import com.example.trainogram.model.Comment;
 import com.example.trainogram.model.Post;
 import com.example.trainogram.repository.PostRepository;
-import com.example.trainogram.service.CommentService;
 import com.example.trainogram.service.PostService;
 import org.springframework.stereotype.Service;
 
@@ -41,15 +39,26 @@ public class PostServiceImpl implements PostService {
         return postRepository.findByPostId(id);
     }
 
-    @Override
-    public Post updatePost(Long id, Post post) {
-        Post postToUpdate = postRepository.findByPostId(id);
-        if (!post.getPostText().isEmpty() || post.getPostPicture() != null) {
-            postToUpdate.setPostText(post.getPostText());
-            postToUpdate.setPostPicture(post.getPostPicture());
-//            postToUpdate.setLikes(post.getLikes());
-        }
+//    @Override
+//    public Post updatePost(Long id, Post post) {
+//        Post postToUpdate = postRepository.findByPostId(id);
+//        if (!post.getPostText().isEmpty() || post.getPostPicture() != null) {
+//            postToUpdate.setPostText(post.getPostText());
+//            postToUpdate.setPostPicture(post.getPostPicture());
+////            postToUpdate.setLikes(post.getLikes());
+//            postToUpdate.setComments(post.getComments());
+//        }
+//
+//        return postRepository.save(postToUpdate);
+//    }
 
-        return postRepository.save(postToUpdate);
+    @Override
+    public void updatePostLikeCount(Post post) {
+        postRepository.save(post);
+    }
+
+    @Override
+    public void updatePost(Post post) {
+        postRepository.save(post);
     }
 }

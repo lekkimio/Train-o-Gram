@@ -1,7 +1,6 @@
 package com.example.trainogram.service;
 
 
-import com.example.trainogram.model.Comment;
 import com.example.trainogram.model.Post;
 
 import java.util.List;
@@ -15,6 +14,9 @@ public interface PostService {
 
     Post findByPostId(Long id);
 
-    Post updatePost(Long id, Post post);
+//    Post updatePost(Long id, Post post);
 
+    void updatePostLikeCount(Post post);
+
+    void updatePost(Post post);
 }

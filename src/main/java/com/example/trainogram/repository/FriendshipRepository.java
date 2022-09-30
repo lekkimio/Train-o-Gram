@@ -21,5 +21,5 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     List<User> findAllRequestByOwnerId(Long userId);
 
     @Query("SELECT f FROM Friendship f WHERE f.owner = ?1 AND f.friend = ?2")
-    Friendship findByUserAndFriend(User user, User friend);
+    Friendship findByOwnerAndFriend(User owner, User friend);
 }

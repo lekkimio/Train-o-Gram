@@ -1,8 +1,10 @@
 package com.example.trainogram.facade;
 
-import com.example.trainogram.exception.UserException;
-import com.example.trainogram.model.User;
-import com.example.trainogram.model.dto.UserDto;
+import com.example.trainogram.exception.CustomException;
+import com.example.trainogram.model.dto.request.UserAuthDto;
+import com.example.trainogram.model.dto.request.UserRequestDto;
+import com.example.trainogram.model.dto.response.NotificationResponseDto;
+import com.example.trainogram.model.dto.response.UserResponseDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -13,13 +15,17 @@ public interface UserFacade {
 
     void deleteUser(Long id);
 
-    UserDto updateUser(Long id, User user, MultipartFile file, String key) throws UserException;
+    void updateUser(UserRequestDto user, MultipartFile file) throws CustomException;
 
-    UserDto addUser(User user, String key) throws UserException, IOException;
+    void createUser(UserAuthDto user) throws IOException, CustomException;
 
-    UserDto findUserById(Long id) throws UserException;
+    UserResponseDto getUserById(Long id) throws  CustomException;
 
-    List<UserDto> findAllUsers() throws UserException;
+    List<UserResponseDto> getAllUsers() throws  CustomException;
 
-    byte[] getAvatar(Long id) throws UserException, IOException;
+    byte[] getAvatar(Long id) throws  IOException, CustomException;
+
+    List<NotificationResponseDto> getAllNotification() throws CustomException;
+
+    NotificationResponseDto getNotificationById(Long notificationId) throws CustomException;
 }

@@ -1,8 +1,8 @@
 package com.example.trainogram.controller;
 
-import com.example.trainogram.exception.UserException;
+import com.example.trainogram.exception.CustomException;
 import com.example.trainogram.facade.UserFacade;
-import com.example.trainogram.model.User;
+import com.example.trainogram.model.dto.request.UserAuthDto;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,9 +36,8 @@ public class AuthController {
     }*/
 
     @PostMapping("/signup")
-    public String signupProcess(@RequestBody User user, @RequestParam(required = false) String key) throws UserException, IOException {
-        userFacade.addUser(user, key);
-        return "redirect:localhost:8080/users";
+    public void signupProcess(@RequestBody UserAuthDto user) throws  IOException, CustomException {
+        userFacade.createUser(user);
     }
 
 

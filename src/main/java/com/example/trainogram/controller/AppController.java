@@ -14,4 +14,9 @@ public class AppController {
     private String getHomePage(){
         return "hello" +" "+ SecurityContextHolder.getContext().getAuthentication().getName();
     }
+
+    @GetMapping("/admin")
+    private String getAdminPage(){
+        return "hello" +" "+ SecurityContextHolder.getContext().getAuthentication().getName();
+    }
 }

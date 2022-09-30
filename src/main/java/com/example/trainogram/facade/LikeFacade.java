@@ -1,27 +1,24 @@
 package com.example.trainogram.facade;
 
-import com.example.trainogram.exception.LikeException;
-import com.example.trainogram.model.Like;
-import com.example.trainogram.model.Post;
-import com.example.trainogram.model.User;
-import com.example.trainogram.model.dto.PostDto;
-import com.example.trainogram.model.dto.UserDto;
+import com.example.trainogram.exception.CustomException;
+import com.example.trainogram.model.dto.response.PostResponseDto;
+import com.example.trainogram.model.dto.response.UserResponseDto;
 
 import java.util.List;
 
 public interface LikeFacade {
+    List<UserResponseDto> findAllLikedUsersToComment(Long commentId);
 
-    void addLikeToPost(Long postId) throws LikeException;
+    List<UserResponseDto> findAllLikedUsersToPost(Long postId);
+
+    List<PostResponseDto> findAllLikedPostsByUser();
+
+
+    void addLikeToPost(Long postId) throws CustomException;
 
     void deleteLikeFromPost(Long postId);
 
-    List<Like> findAllLikedUsers(Long postId);
-
-    List<UserDto> findUserByPostId(Long postId);
-
-    List<PostDto> findAllPostsLikedByUser();
+    void addLikeToComment(Long commentId) throws CustomException;
 
     void deleteLikeFromComment(Long commentId);
-
-    void addLikeToComment(Long commentId);
 }

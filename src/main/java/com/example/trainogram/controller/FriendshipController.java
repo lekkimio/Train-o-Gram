@@ -1,9 +1,8 @@
 package com.example.trainogram.controller;
 
-import com.example.trainogram.exception.UserException;
+import com.example.trainogram.exception.CustomException;
 import com.example.trainogram.facade.FriendshipFacade;
-import com.example.trainogram.model.dto.FriendshipDto;
-import com.example.trainogram.model.dto.UserDto;
+import com.example.trainogram.model.dto.response.UserResponseDto;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,29 +17,23 @@ public class FriendshipController {
         this.friendshipFacade = friendshipFacade;
     }
 
-
-    @GetMapping
-    public String getFriendsHome(){
-        return "sdsdasdsadsda";
-    }
-
     @GetMapping("/{userId}")
-    public List<UserDto> getAllFriends(@PathVariable Long userId) {
-        return friendshipFacade.findAllFriends(userId);
+    public List<UserResponseDto> getAllFriends(@PathVariable Long userId) {
+        return friendshipFacade.getAllFriends(userId);
     }
 
     @GetMapping("/pending/{userId}")
-    public List<UserDto> getAllRequests(@PathVariable Long userId) {
-        return friendshipFacade.findAllRequests(userId);
+    public List<UserResponseDto> getAllRequests(@PathVariable Long userId) {
+        return friendshipFacade.getAllRequests(userId);
     }
 
     @PostMapping("/{friendId}")
-    public FriendshipDto addFriend(@PathVariable Long friendId) throws UserException {
-        return friendshipFacade.addFriend(friendId);
+    public void addFriend(@PathVariable Long friendId) throws CustomException {
+        friendshipFacade.addFriend(friendId);
     }
 
     @DeleteMapping("/{friendId}")
-    public void deleteFriend(@PathVariable Long friendId) throws UserException {
+    public void deleteFriend(@PathVariable Long friendId) throws CustomException {
         friendshipFacade.deleteFriend(friendId);
     }
 

@@ -1,10 +1,12 @@
 package com.example.trainogram.service.impl;
 
+import com.example.trainogram.exception.CustomException;
 import com.example.trainogram.model.Friendship;
 import com.example.trainogram.model.RequestStatus;
 import com.example.trainogram.model.User;
 import com.example.trainogram.repository.FriendshipRepository;
 import com.example.trainogram.service.FriendshipService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,33 +21,38 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public Friendship addFriend(User owner, User friend) {
-        Friendship newFriendship = new Friendship();
-        newFriendship.setOwner(owner);
-        newFriendship.setFriend(friend);
-        Friendship friendship = friendshipRepository.findByUserAndFriend(friend,owner);
-        if (friendship != null) {
-            newFriendship.setStatus(RequestStatus.FRIEND.name());
+    public Friendship addFriend(Friendship friendship, boolean friendshipExistence) {
+        if (friendshipExistence){
+            Friendship otherFriendship = Friendship.builder()
+                    .owner(friendship.getFriend())
+                    .friend(friendship.getOwner()).build();
             friendship.setStatus(RequestStatus.FRIEND.name());
-            friendshipRepository.save(friendship);
-        } else {
-            newFriendship.setStatus(RequestStatus.REQUEST.name());
+            otherFriendship.setStatus(RequestStatus.FRIEND.name());
+            friendshipRepository.save(otherFriendship);
         }
-        return friendshipRepository.save(newFriendship);
-
+        return friendshipRepository.save(friendship);
 
     }
 
     @Override
-    public void deleteFriend(User owner, User friend) {
-        Friendship friendship = friendshipRepository.findByUserAndFriend(owner, friend);
-        if(friendship.getStatus().equals(RequestStatus.FRIEND.name())) {
-            Friendship otherFriendship = friendshipRepository.findByUserAndFriend(friend, owner);
-            otherFriendship.setStatus(RequestStatus.REQUEST.name());
-            friendshipRepository.save(otherFriendship);
+    public Friendship findByOwnerAndFriend(User owner, User friend) {
+//        Friendship friendship = friendshipRepository.findByUserAndFriend(friend, owner);
+//        return friendship != null && friendship.getStatus().equals(RequestStatus.FRIEND);
+        return friendshipRepository.findByOwnerAndFriend(owner,friend);
+    }
+
+    @Override
+    public void deleteFriend(User owner, User friend) throws CustomException {
+         Friendship friendship = friendshipRepository.findByOwnerAndFriend(owner, friend);
+        if (friendship != null) {
+            if (friendship.getStatus().equals(RequestStatus.FRIEND.name())) {
+                Friendship otherFriendship = friendshipRepository.findByOwnerAndFriend(friend, owner);
+                otherFriendship.setStatus(RequestStatus.REQUEST.name());
+                friendshipRepository.save(otherFriendship);
+            }
+            friendshipRepository.delete(friendship);
+        }else {throw new CustomException("Friendship not found", HttpStatus.NOT_FOUND);
         }
-        friendshipRepository.delete(friendship);
-        System.out.println("Friendship deleted");
     }
 
     @Override

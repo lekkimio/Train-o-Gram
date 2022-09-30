@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class Comment {
 
 
@@ -24,6 +25,7 @@ public class Comment {
     private User commentAuthor;
 
     private String text;
+    private Integer likes;
 
     private LocalDateTime commentPub;
 

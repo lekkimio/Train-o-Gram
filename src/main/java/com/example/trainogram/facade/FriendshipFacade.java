@@ -1,17 +1,17 @@
 package com.example.trainogram.facade;
 
-import com.example.trainogram.exception.UserException;
-import com.example.trainogram.model.dto.FriendshipDto;
-import com.example.trainogram.model.dto.UserDto;
+import com.example.trainogram.exception.CustomException;
+
+import com.example.trainogram.model.dto.response.UserResponseDto;
 
 import java.util.List;
 
 public interface FriendshipFacade {
-    List<UserDto> findAllFriends(Long userId);
+    List<UserResponseDto> getAllFriends(Long userId);
 
-    List<UserDto> findAllRequests(Long userId);
+    List<UserResponseDto> getAllRequests(Long userId);
 
-    FriendshipDto addFriend(Long friendId) throws UserException;
+    void addFriend(Long friendId) throws  CustomException;
 
-    void deleteFriend(Long friendId) throws UserException;
+    void deleteFriend(Long friendId) throws  CustomException;
 }

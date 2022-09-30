@@ -1,10 +1,10 @@
 package com.example.trainogram.service.impl;
 
-import com.example.trainogram.exception.UserException;
-import com.example.trainogram.model.Role;
+import com.example.trainogram.exception.CustomException;
 import com.example.trainogram.model.User;
 import com.example.trainogram.repository.UserRepository;
 import com.example.trainogram.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,9 +31,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User addUser(User user) throws UserException {
+    public User createUser(User user) throws CustomException {
         if (userRepository.findUserByUsername(user.getUsername()) != null) {
-            throw new UserException("User already exists");
+            throw new CustomException("User already exists", HttpStatus.CONFLICT, HttpStatus.CONFLICT.value());
         } else {
             String encodedPass = passwordEncoder.encode(user.getPassword());
             user.setPassword(encodedPass);
@@ -47,21 +47,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(User user) throws UserException {
-        //TODO:
-        // check if user exists
-        // check if user is authenticated and if he is trying to update his own account, if not throw exception,
-        // if yes, update user
-        // check if input info is the same as the one in the database
-        if (userRepository.findById(user.getId()).isPresent()) {
-            if (!findAuthenticatedUser().getId().equals(user.getId()) || findAuthenticatedUser().getRole().equals(Role.ADMIN)) {
-                return userRepository.save(user);
-            }else {
-                throw new UserException("You have no authorities");
-            }
-        } else {
-            throw new UserException("User not found");
-        }
+    public void updateUser(User user){
+        userRepository.save(user);
+
+//        if (userRepository.findById(user.getId()).isPresent()) {
+//            if (findAuthenticatedUser().getId().equals(user.getId())) {
+//                return userRepository.save(user);
+//            }else {
+//                throw new UserException("You have no authorities");
+//            }
+//        } else {
+//            throw new UserException("User not found");
+//        }
     }
 
     @Override
@@ -70,13 +67,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findUserById(Long id) throws UserException {
-        return userRepository.findById(id).orElseThrow(() -> new UserException("User not found"));
+    public User findUserById(Long id) throws  CustomException {
+        return userRepository.findById(id).orElseThrow(() -> new CustomException("User not found",HttpStatus.NOT_FOUND));
     }
 
     @Override
     public User findAuthenticatedUser() {
         return userRepository.findUserByUsername(
                 SecurityContextHolder.getContext().getAuthentication().getName());
+
     }
 }

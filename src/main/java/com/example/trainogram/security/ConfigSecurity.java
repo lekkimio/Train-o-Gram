@@ -1,5 +1,6 @@
 package com.example.trainogram.security;
 
+import com.example.trainogram.model.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -39,6 +40,7 @@ public class ConfigSecurity {
                 .authorizeRequests()
                 .antMatchers("/").permitAll()
                 .antMatchers("/auth/**").permitAll()
+                .antMatchers("/admin/**").hasAnyRole(Role.ADMIN.name())
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -47,7 +49,7 @@ public class ConfigSecurity {
                 .httpBasic();
 
         http.authenticationProvider(authenticationProvider());
-        http.headers().frameOptions().sameOrigin();
+//        http.headers().frameOptions().sameOrigin();
 
         return http.build();
     }
