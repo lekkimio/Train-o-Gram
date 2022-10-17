@@ -8,6 +8,7 @@ import java.util.List;
 
 @Data
 public class PostResponseDto implements Serializable {
+
     private Long id;
     private Integer likes;
     private UserResponseDto postAuthor;

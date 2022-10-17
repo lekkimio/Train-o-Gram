@@ -1,12 +1,12 @@
 package com.example.trainogram.service.impl;
 
-import com.example.trainogram.exception.CustomException;
+import com.example.trainogram.exception.Status440NotificationNotFound;
 import com.example.trainogram.model.Notification;
 import com.example.trainogram.model.NotificationStatus;
 import com.example.trainogram.model.User;
 import com.example.trainogram.repository.NotificationRepository;
 import com.example.trainogram.service.NotificationService;
-import org.springframework.http.HttpStatus;
+import com.example.trainogram.service.UserService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -43,12 +43,12 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Notification getNotificationById(Long notificationId) throws CustomException {
+    public Notification getNotificationById(Long notificationId) throws Status440NotificationNotFound {
         Optional<Notification> notification = notificationRepository.findById(notificationId);
         if (notification.isPresent()) {
             notification.get().setStatus(NotificationStatus.SEEN);
             return notificationRepository.save(notification.get());
 
-        } else throw new CustomException("Provide correct Notification Id", HttpStatus.BAD_REQUEST );
+        } else throw new Status440NotificationNotFound(notificationId);
     }
 }

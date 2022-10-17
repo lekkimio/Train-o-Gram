@@ -20,13 +20,14 @@ public class LikeToPost {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "like_ID")
+    private Like like;
+
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "post_ID")
     private Post post;
 
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "user_ID")
-    private User user;
 
 }

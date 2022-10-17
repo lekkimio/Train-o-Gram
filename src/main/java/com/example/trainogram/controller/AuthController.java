@@ -1,11 +1,16 @@
 package com.example.trainogram.controller;
 
-import com.example.trainogram.exception.CustomException;
-import com.example.trainogram.facade.UserFacade;
+import com.example.trainogram.exception.Status436UserExistsException;
 import com.example.trainogram.model.dto.request.UserAuthDto;
+import com.example.trainogram.service.UserService;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
@@ -13,10 +18,10 @@ import java.io.IOException;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserFacade userFacade;
+    private final UserService userService;
 
-    public AuthController(UserFacade userFacade) {
-        this.userFacade = userFacade;
+    public AuthController(UserService userService) {
+        this.userService = userService;
     }
 
     /*@GetMapping("/login")
@@ -36,10 +41,14 @@ public class AuthController {
     }*/
 
     @PostMapping("/signup")
-    public void signupProcess(@RequestBody UserAuthDto user) throws  IOException, CustomException {
-        userFacade.createUser(user);
+    public String signupProcess(@RequestBody UserAuthDto user) throws Status436UserExistsException {
+        userService.createUser(user);
+        return "redirect:/home";
     }
 
-
+    @GetMapping("/token/refresh")
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        userService.refreshToken(request,response);
+    }
 
 }

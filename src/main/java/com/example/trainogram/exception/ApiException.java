@@ -6,6 +6,6 @@ import org.springframework.http.HttpStatus;
 import java.time.ZonedDateTime;
 
 @Builder
-public record ApiException(String message, HttpStatus status, Integer code, ZonedDateTime timestamp) {
+public record ApiException(String message, Integer code, ZonedDateTime timestamp) {
 
 }

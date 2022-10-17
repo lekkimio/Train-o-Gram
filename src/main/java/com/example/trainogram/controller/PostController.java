@@ -1,59 +1,77 @@
 package com.example.trainogram.controller;
 
-import com.example.trainogram.exception.CustomException;
-import com.example.trainogram.facade.PostFacade;
+import com.example.trainogram.exception.Status434UserNotFound;
+import com.example.trainogram.exception.Status435NoAuthorities;
+import com.example.trainogram.exception.Status437PostNotFound;
+import com.example.trainogram.exception.Status438SponsorPostNotFound;
+import com.example.trainogram.model.Post;
+import com.example.trainogram.model.SponsorPost;
 import com.example.trainogram.model.dto.response.PostResponseDto;
 import com.example.trainogram.model.dto.response.SponsorPostResponseDto;
+import com.example.trainogram.service.PostService;
+import com.example.trainogram.service.SponsorPostService;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users/post")
+@RequiredArgsConstructor
 public class PostController {
 
+    private final PostService postService;
+    private final SponsorPostService sponsorPostService;
+    private final ModelMapper modelMapper;
 
-    private final PostFacade postFacade;
-
-    public PostController(PostFacade postFacade) {
-        this.postFacade = postFacade;
-    }
 
     @GetMapping()
-    public List<PostResponseDto> getAllUserPost() {
-        return postFacade.getAllUserPosts();
+    public List<PostResponseDto> getAllUserPost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token) {
+        List<Post> posts = postService.findAllPostsByUser(token);
+
+        Type listType = new TypeToken<List<PostResponseDto>>() {}.getType();
+        return modelMapper.map(posts, listType);
     }
 
+
     @GetMapping("/{id}")
-    public PostResponseDto getUserPost(@PathVariable Long id) {
-        return postFacade.getUserPostById(id);
+    public PostResponseDto getUserPost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+                                       @PathVariable Long id) throws Status437PostNotFound {
+        return modelMapper.map(postService.findPostById(id), PostResponseDto.class);
     }
 
 
     @GetMapping(value = "/image/{id}", produces = MediaType.IMAGE_PNG_VALUE)
-    public @ResponseBody byte[] getPostPicture(@PathVariable Long id) {
-        return postFacade.getPostPicture(id);
+    public @ResponseBody byte[] getPostPicture(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+                                               @PathVariable Long id) throws Status437PostNotFound {
+        return postService.getPostPicture(token, id);
     }
 
     @PostMapping()
-    public void createPost(@RequestParam String postText,
+    public void createPost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+                           @RequestParam(required = false) String postText,
                            @RequestParam MultipartFile file) throws IOException {
-        postFacade.createPost(postText, file);
+        postService.createPost(token, postText, file);
     }
 
     @DeleteMapping("/{id}")
-    public void deletePost(@PathVariable Long id) throws CustomException {
-        postFacade.deletePost(id);
+    public void deletePost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @PathVariable Long id) throws Status435NoAuthorities, Status437PostNotFound, IOException {
+        postService.deletePost(token, id);
     }
 
     @PutMapping("/{id}")
-    public void updatePost(@RequestParam(required = false) String postText,
+    public void updatePost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+                           @RequestParam(required = false) String postText,
                            @RequestParam(required = false) MultipartFile file,
-                           @PathVariable Long id) throws IOException, CustomException {
-        postFacade.updatePost(id, postText, file);
+                           @PathVariable Long id) throws Status437PostNotFound, IOException, Status435NoAuthorities {
+        postService.updatePost(token, id, postText, file);
     }
 
     /**
@@ -61,43 +79,48 @@ public class PostController {
     **/
 
     @GetMapping("/sponsor/{sponsorPostId}")
-    public SponsorPostResponseDto getSponsorPost(@PathVariable Long sponsorPostId){
+    public SponsorPostResponseDto getSponsorPost(@PathVariable Long sponsorPostId) throws Status438SponsorPostNotFound {
         //find Post by SponsorPostId
-        return postFacade.getSponsorPost(sponsorPostId);
+        return modelMapper.map(sponsorPostService.findSponsorPost(sponsorPostId), SponsorPostResponseDto.class);
     }
 
 
 
     @PostMapping("/sponsor")
-    public void createSponsorPost(@RequestParam String postText,
+    public void createSponsorPost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+                                  @RequestParam String postText,
                                   @RequestParam Long sponsorId,
-                                  @RequestParam MultipartFile file) throws IOException, CustomException{
-        postFacade.createSponsorPost(postText,file, sponsorId);
+                                  @RequestParam MultipartFile file) throws Status434UserNotFound, IOException {
+        sponsorPostService.createSponsorPost(token, postText,file, sponsorId);
     }
 
     @PutMapping("/sponsor/{sponsorPostId}")
-    public void updateSponsorPost(@PathVariable Long sponsorPostId,
+    public void updateSponsorPost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+                                  @PathVariable Long sponsorPostId,
                                   @RequestParam String postText,
-                                  @RequestParam MultipartFile file) throws IOException {
-        postFacade.updateSponsorPost(sponsorPostId, postText, file);
+                                  @RequestParam MultipartFile file) throws IOException, Status438SponsorPostNotFound {
+        sponsorPostService.updateSponsorPost(token, sponsorPostId, postText, file);
     }
 
-    @DeleteMapping("/sponsor/{sponsorId}")
-    public void deleteSponsorPost(@PathVariable Long sponsorId) throws CustomException {
-         postFacade.deleteSponsorPost(sponsorId);
+    @DeleteMapping("/sponsor/{sponsorPostId}")
+    public void deleteSponsorPost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+                                  @PathVariable Long sponsorPostId) throws Status435NoAuthorities, Status438SponsorPostNotFound {
+        sponsorPostService.deleteSponsorPost(token, sponsorPostId);
     }
 
 
-    /*@PutMapping("/{id}")
-    public void updatePost(@PathVariable Long id, @RequestBody Post post) throws PostException {
-        postFacade.updatePost(id, post);
-    }*/
+//    @PutMapping("/{id}")
+//    public void updateSponsorPost(@PathVariable Long id, String postText, MultipartFile file) throws CustomException, IOException {
+//        sponsorPostService.updateSponsorPost(id, postText, file);
+//    }
 
 
-    /* @GetMapping("/sponsor-user/{sponsorId}")
-    public List<SponsorPostResponseDto> getAllSponsorPost(@PathVariable Long sponsorId){
+     @GetMapping("/sponsor-user/{sponsorId}")
+    public List<SponsorPostResponseDto> getAllSponsorPost(@PathVariable Long sponsorId) throws Status434UserNotFound {
         //search all post by Sponsor User
-        return postFacade.getAllSponsorPost(sponsorId);
-    }*/
+         List<SponsorPost> sponsorPosts = sponsorPostService.findAllSponsorPost(sponsorId);
+         Type listType = new TypeToken<List<SponsorPostResponseDto>>() {}.getType();
+        return modelMapper.map(sponsorPosts, listType);
+    }
 
 }

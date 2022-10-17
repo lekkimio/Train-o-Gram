@@ -1,7 +1,7 @@
 package com.example.trainogram.service;
 
 
-import com.example.trainogram.exception.CustomException;
+import com.example.trainogram.exception.Status440NotificationNotFound;
 import com.example.trainogram.model.Notification;
 import com.example.trainogram.model.User;
 
@@ -14,5 +14,5 @@ public interface NotificationService {
 
     List<Notification> getAllNotification(User user);
 
-    Notification getNotificationById(Long notificationId) throws CustomException;
+    Notification getNotificationById(Long notificationId) throws Status440NotificationNotFound;
 }

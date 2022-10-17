@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
@@ -21,5 +22,5 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     List<User> findAllRequestByOwnerId(Long userId);
 
     @Query("SELECT f FROM Friendship f WHERE f.owner = ?1 AND f.friend = ?2")
-    Friendship findByOwnerAndFriend(User owner, User friend);
+    Optional<Friendship> findByOwnerAndFriend(User owner, User friend);
 }

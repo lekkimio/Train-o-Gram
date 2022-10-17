@@ -1,22 +1,25 @@
 package com.example.trainogram.service;
 
 
+import com.example.trainogram.exception.Status435NoAuthorities;
+import com.example.trainogram.exception.Status437PostNotFound;
 import com.example.trainogram.model.Post;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface PostService {
+    Post createPost(String token, String postText, MultipartFile file) throws IOException;
 
-    Post addPost(Post post);
+    void deletePost(String token, Long id) throws Status437PostNotFound, IOException, Status435NoAuthorities;
 
-    void deletePost(Long id);
-    List<Post> findAllPosts(Long id);
+    List<Post> findAllPostsByUser(String token);
+    Post findPostById(Long id) throws Status437PostNotFound;
 
-    Post findByPostId(Long id);
+    byte[] getPostPicture(String token, Long id) throws Status437PostNotFound;
 
-//    Post updatePost(Long id, Post post);
-
-    void updatePostLikeCount(Post post);
+    void updatePost(String token, Long id, String postText, MultipartFile file) throws IOException, Status437PostNotFound, Status435NoAuthorities;
 
     void updatePost(Post post);
 }

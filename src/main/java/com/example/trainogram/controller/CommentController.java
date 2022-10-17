@@ -1,43 +1,58 @@
 package com.example.trainogram.controller;
 
-import com.example.trainogram.exception.CustomException;
-import com.example.trainogram.facade.CommentFacade;
 
+import com.example.trainogram.exception.Status435NoAuthorities;
+import com.example.trainogram.exception.Status437PostNotFound;
+import com.example.trainogram.exception.Status439CommentNotFound;
+import com.example.trainogram.model.Comment;
 import com.example.trainogram.model.dto.response.CommentResponseDto;
+import com.example.trainogram.service.CommentService;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users/post/comment")
 public class CommentController {
 
-    private final CommentFacade commentFacade;
+    private final CommentService commentService;
+    private final ModelMapper modelMapper;
 
 
-    public CommentController(CommentFacade commentFacade) {
-        this.commentFacade = commentFacade;
+    public CommentController(CommentService commentFacade, ModelMapper modelMapper) {
+        this.commentService = commentFacade;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping("/{postId}")
-    public List<CommentResponseDto> getAllComments(@PathVariable Long postId) throws CustomException {
-        return commentFacade.getAllComments(postId);
+    public List<CommentResponseDto> getAllComments(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+                                                   @PathVariable Long postId) {
+        List<Comment> comments = commentService.getAllComments(token, postId);
+        Type listType = new TypeToken<List<CommentResponseDto>>(){}.getType();
+        return modelMapper.map(comments,listType);
     }
 
     @PostMapping("/{postId}")
-    public void createComment(@RequestParam String commentText, @PathVariable Long postId) {
-        commentFacade.createComment(commentText, postId);
+    public void createComment(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+                              @RequestParam String commentText, @PathVariable Long postId) throws Status437PostNotFound {
+        commentService.createComment(token, commentText, postId);
     }
 
 
     @DeleteMapping("/{commentId}")
-    public void deleteComment(@PathVariable Long commentId) throws CustomException {
-        commentFacade.deleteComment(commentId);
+    public void deleteComment(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+                              @PathVariable Long commentId) throws Status435NoAuthorities, Status439CommentNotFound {
+        commentService.deleteComment(token, commentId);
     }
 
     @PutMapping("/{commentId}")
-    public void updateComment(@RequestParam String commentText, @PathVariable Long commentId) throws CustomException {
-        commentFacade.updateComment(commentText, commentId);
+    public void updateComment(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+                              @RequestParam String commentText, @PathVariable Long commentId) throws Status439CommentNotFound {
+        commentService.updateComment(token, commentText, commentId);
     }
 
 

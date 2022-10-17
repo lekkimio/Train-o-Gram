@@ -7,8 +7,8 @@ import java.io.Serializable;
 
 @Data
 public class UserRequestDto implements Serializable {
-//    private Long id;
+    private Long id;
     private String username;
     private String password;
-    private String avatar;
+//    private String avatar;
 }
