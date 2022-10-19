@@ -18,8 +18,9 @@ import com.example.trainogram.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
@@ -27,9 +28,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -169,7 +170,8 @@ public class UserServiceImpl implements UserService {
                         .withSubject(user.getUsername())
                         .withExpiresAt(new Date(System.currentTimeMillis() + tokenExpiration))
                         .withIssuer(request.getRequestURL().toString())
-                        .withClaim("roles", user.getRole().getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                        .withClaim("roles", Collections.singletonList(user.getRole()))
+                                /*.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList())*/
                         .sign(algorithm);
                 Map<String, String> tokens = new HashMap<>();
                 tokens.put("access_token", access_token);
@@ -179,7 +181,6 @@ public class UserServiceImpl implements UserService {
             }catch(Exception e){
                 response.setHeader("error", e.getMessage());
                 response.setStatus(FORBIDDEN.value());
-                //response.sendError(FORBIDDEN.value());
                 Map<String, String> error = new HashMap<>();
                 error.put("error_message", e.getMessage());
                 response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
@@ -188,42 +189,22 @@ public class UserServiceImpl implements UserService {
         }
         else {
             throw new RuntimeException("Refresh token is missing");
-    }
+        }
     }
 
-    //    protected String saveImage(MultipartFile file, Long userId) throws IOException {
-//        byte[] bytes = file.getBytes();
-//        String userPath = folder + userId + "/";
-//        new File(userPath).mkdir();
-//
-//        Path path = Paths.get(userPath + file.getOriginalFilename());
-//        Files.write(path, bytes);
-//        return file.getOriginalFilename();
-//    }
-//
-//    private void deleteUserFiles(Long id) throws IOException {
-//        FileUtils.deleteDirectory(new File(folder + id));
-//    }
 
-//    @Override
-//    public byte[] getAvatar(Long id) throws CustomException {
-//        User user = userRepository.findById(id).orElseThrow(()->new CustomException("Provide correct User Id", HttpStatus.BAD_REQUEST));
-//
-//        String path = "src/main/resources/static/"+id+"/"+user.getAvatar();
-//
-//        boolean boo = new File(path).exists();
-//        if (!boo) {
-//            path = "src/main/resources/static/user_picture.jpg";
-//        }
-//
-//        InputStream in = getClass().getResourceAsStream(path);
-//        assert in != null;
-//        byte[] result = null;
-//        try {
-//            result = IOUtils.toByteArray(in);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return result;
-//    }
+    @Override
+    public InputStreamResource getAvatar(Long id) throws Status434UserNotFound, IOException {
+        User user = userRepository.findById(id).orElseThrow(()->new Status434UserNotFound(id));
+        String path = "/static/"+id+"/"+user.getAvatar();
+
+        var imgFile = new ClassPathResource(path);
+        boolean boo = imgFile.exists();
+
+        if (!boo) {
+            imgFile = new ClassPathResource("/static/user_picture.jpg");
+        }
+
+        return new InputStreamResource(imgFile.getInputStream());
+    }
 }

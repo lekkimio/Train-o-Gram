@@ -25,8 +25,13 @@ public class User {
 
     private String avatar;
 
-    @Column(name = "role", columnDefinition = "VARCHAR(20)")
-    @Enumerated(value = EnumType.STRING)
+//    @Column(name = "role", columnDefinition = "VARCHAR(20)")
+//    @Enumerated(value = EnumType.STRING)
+//    private Role role;
+
+    @Column(nullable = false)
+//    @Convert(converter = RoleConverter.FieldConverter.class)
+    @Enumerated(EnumType.STRING)
     private Role role;
 
 }

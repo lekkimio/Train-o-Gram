@@ -2,6 +2,7 @@ package com.example.trainogram.service.impl;
 
 import com.example.trainogram.model.Post;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,9 +11,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class FileService {
+
 
     private final String folder = "D:\\Games\\Projects\\Train-o-Gram\\src\\main\\resources\\static\\";
 
@@ -21,14 +26,18 @@ public class FileService {
         return saveProcess(file, userPath);
     }
 
-    private String saveProcess(MultipartFile file, String userPath) throws IOException {
+    public String saveProcess(MultipartFile file, String userPath) throws IOException {
         byte[] bytes = file.getBytes();
         File file1 = new File(userPath);
+        String type = "."+ Objects.requireNonNull(file.getOriginalFilename()).split("\\.")[1];
+        UUID fileName = UUID.randomUUID();
         file1.mkdirs();
-        Path path = Paths.get(userPath + File.separator + file.getOriginalFilename());
+        String finalFileName = fileName + type;
+        Path path = Paths.get(userPath + File.separator + finalFileName);
         FileUtils.cleanDirectory(file1);
         Files.write(path, bytes);
-        return file.getOriginalFilename();
+
+        return finalFileName;
     }
 
     public String savePostImage(MultipartFile file, Long userId, Long postId) throws IOException {

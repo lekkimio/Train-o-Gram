@@ -1,12 +1,12 @@
 package com.example.trainogram.security;
 
-import com.example.trainogram.model.Permission;
 import com.example.trainogram.model.Role;
 import com.example.trainogram.repository.UserRepository;
 import com.example.trainogram.security.jwt.CustomAuthenticationFilter;
 import com.example.trainogram.security.jwt.CustomAuthorizationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -30,7 +30,6 @@ public class ConfigSecurity {
         this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
     }
-
     @Bean
     public BCryptPasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
@@ -42,6 +41,13 @@ public class ConfigSecurity {
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
+    }
+
+    @Bean
+    public RoleVoter roleVoter() {
+        RoleVoter roleVoter = new RoleVoter();
+        roleVoter.setRolePrefix("");
+        return roleVoter;
     }
 
     @Bean
@@ -62,11 +68,11 @@ public class ConfigSecurity {
                 .authorizeRequests()
                 .antMatchers("/").permitAll()
                 .antMatchers("/auth/**").permitAll()
-                .antMatchers("/admin/**").hasAuthority(Permission.WRITE.getPermission())
+                .antMatchers("/admin/**").hasAuthority(Role.ADMIN.name())
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(customAuthenticationFilter)
-                .addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new CustomAuthorizationFilter(userDetailsService), UsernamePasswordAuthenticationFilter.class)
                 .authenticationManager(authenticationManager);
 
         http.headers().frameOptions().disable();

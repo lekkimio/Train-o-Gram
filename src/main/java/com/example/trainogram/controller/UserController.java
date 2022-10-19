@@ -14,7 +14,9 @@ import com.example.trainogram.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +31,7 @@ public class UserController {
 
     private final UserService userService;
     private final ModelMapper modelMapper;
+
 
 
     @GetMapping()
@@ -59,21 +62,12 @@ public class UserController {
         userService.deleteUser(token, id);
     }
 
-    /*    @ResponseBody
+
     @GetMapping(value = "/avatar/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public byte[] getAvatar(@PathVariable Long id) throws  IOException, CustomException {
-        String path = "/static/1/2.jpg";
-        InputStream in = this.getClass().getResourceAsStream(path);
-        assert in != null;
-        byte[] result = null;
-        try {
-            result = IOUtils.toByteArray(in);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
+    public InputStreamResource getAvatar(@PathVariable Long id) throws Status434UserNotFound, IOException {
+
         return  userService.getAvatar(id);
-    }*/
+    }
 
     @GetMapping("/notification")
     public List<NotificationResponseDto> getAllNotification(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token) {

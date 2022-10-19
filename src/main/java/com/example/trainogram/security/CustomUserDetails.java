@@ -5,38 +5,40 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 
 public class CustomUserDetails implements UserDetails {
+   private final User user;
 
-    /*private final User user;*/
+//    private final String username;
+//    private final String password;
+//    private final List<SimpleGrantedAuthority> authorities;
 
-    private final String username;
-    private final String password;
-    private final List<SimpleGrantedAuthority> authorities;
-
-    public CustomUserDetails(String username, String password, List<SimpleGrantedAuthority> authorities) {
-
-        this.username = username;
-        this.password = password;
-        this.authorities = authorities;
+    public CustomUserDetails(/*String username, String password, List<SimpleGrantedAuthority> authorities,*/ User user) {
+        this.user = user;
+//
+//        this.username = username;
+//        this.password = password;
+//        this.authorities = authorities;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return Collections.singleton(new SimpleGrantedAuthority(user.getRole().name()));
     }
 
     @Override
     public String getPassword() {
-        return password;
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return username;
+        return user.getUsername();
     }
 
     @Override
@@ -63,6 +65,6 @@ public class CustomUserDetails implements UserDetails {
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                user.getRole().getAuthorities());
+                Collections.singleton(new SimpleGrantedAuthority(user.getRole().name())));
     }
 }

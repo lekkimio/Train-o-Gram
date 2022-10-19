@@ -8,6 +8,7 @@ import com.example.trainogram.model.Notification;
 import com.example.trainogram.model.User;
 import com.example.trainogram.model.dto.request.UserAuthDto;
 import com.example.trainogram.model.dto.request.UserRequestDto;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,5 +41,7 @@ public interface UserService {
     User findAuthenticatedUser(String token);
 
     void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException;
-//    byte[] getAvatar(Long id) throws CustomException;
+
+    InputStreamResource getAvatar(Long id) throws Status434UserNotFound, IOException;
+
 }

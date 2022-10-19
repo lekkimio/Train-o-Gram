@@ -13,6 +13,7 @@ import com.example.trainogram.service.SponsorPostService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -48,17 +49,17 @@ public class PostController {
     }
 
 
-    @GetMapping(value = "/image/{id}", produces = MediaType.IMAGE_PNG_VALUE)
-    public @ResponseBody byte[] getPostPicture(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
-                                               @PathVariable Long id) throws Status437PostNotFound {
+    @GetMapping(value = "/image/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public @ResponseBody InputStreamResource getPostPicture(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+                                                            @PathVariable Long id) throws Status437PostNotFound, IOException {
         return postService.getPostPicture(token, id);
     }
 
     @PostMapping()
     public void createPost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
                            @RequestParam(required = false) String postText,
-                           @RequestParam MultipartFile file) throws IOException {
-        postService.createPost(token, postText, file);
+                           @RequestParam MultipartFile postPicture) throws IOException {
+        postService.createPost(token, postText, postPicture);
     }
 
     @DeleteMapping("/{id}")

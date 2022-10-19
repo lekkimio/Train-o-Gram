@@ -7,13 +7,13 @@ import com.example.trainogram.model.User;
 import com.example.trainogram.repository.PostRepository;
 import com.example.trainogram.service.PostService;
 import com.example.trainogram.service.UserService;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -75,22 +75,31 @@ public class PostServiceImpl implements PostService {
         return postRepository.findById(id).orElseThrow(()-> new Status437PostNotFound(id));
     }
 
-    @Override
-    public byte[] getPostPicture(String token, Long id) throws Status437PostNotFound {
-        Post post = findPostById(id);
+//    @Override
+//    public byte[] getPostPicture(String token, Long id) throws Status437PostNotFound {
+//        String folder = "D:\\Games\\Projects\\Train-o-Gram\\src\\main\\resources\\static\\";
+//        Post post = findPostById(id);
+//        String path = "\\main\\resources\\static\\" + post.getPostAuthor().getId()+"\\post\\"+id+"\\"+post.getPostPicture();
+//        System.out.println(path);
+//        InputStream in = getClass().getResourceAsStream(path);
+//        assert in != null;
+//        byte[] result = null;
+//        try {
+//            result = IOUtils.toByteArray(in);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return result;
+//    }
 
-        String folder = "D:\\Games\\Projects\\Train-o-Gram\\src\\main\\resources\\static\\";
-        String path = folder + post.getPostAuthor().getId()+"/post/"+id+"/"+post.getPostPicture();
-        System.out.println(path);
-        InputStream in = getClass().getResourceAsStream(path);
-        assert in != null;
-        byte[] result = null;
-        try {
-            result = IOUtils.toByteArray(in);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
+    @Override
+    public InputStreamResource getPostPicture(String token, Long id) throws Status437PostNotFound, IOException {
+//        String folder = "D:\\Games\\Projects\\Train-o-Gram\\src\\main\\resources\\static\\";
+        Post post = findPostById(id);
+        var imgFile = new ClassPathResource("\\static\\"+post.getPostAuthor().getId()+"\\post\\"+id+"\\"+post.getPostPicture());
+
+        return new InputStreamResource(imgFile.getInputStream());
+
     }
 
     @Override
