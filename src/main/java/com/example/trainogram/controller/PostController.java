@@ -99,13 +99,13 @@ public class PostController {
     public void updateSponsorPost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
                                   @PathVariable Long sponsorPostId,
                                   @RequestParam String postText,
-                                  @RequestParam MultipartFile file) throws IOException, Status438SponsorPostNotFound {
+                                  @RequestParam MultipartFile file) throws IOException, Status438SponsorPostNotFound, Status435NoAuthorities, Status437PostNotFound {
         sponsorPostService.updateSponsorPost(token, sponsorPostId, postText, file);
     }
 
     @DeleteMapping("/sponsor/{sponsorPostId}")
     public void deleteSponsorPost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
-                                  @PathVariable Long sponsorPostId) throws Status435NoAuthorities, Status438SponsorPostNotFound {
+                                  @PathVariable Long sponsorPostId) throws Status435NoAuthorities, Status438SponsorPostNotFound, Status437PostNotFound, IOException {
         sponsorPostService.deleteSponsorPost(token, sponsorPostId);
     }
 
@@ -116,11 +116,19 @@ public class PostController {
 //    }
 
 
-     @GetMapping("/sponsor-user/{sponsorId}")
+    @GetMapping("/sponsor-user/{sponsorId}")
     public List<SponsorPostResponseDto> getAllSponsorPost(@PathVariable Long sponsorId) throws Status434UserNotFound {
         //search all post by Sponsor User
          List<SponsorPost> sponsorPosts = sponsorPostService.findAllSponsorPost(sponsorId);
          Type listType = new TypeToken<List<SponsorPostResponseDto>>() {}.getType();
+        return modelMapper.map(sponsorPosts, listType);
+    }
+
+    @GetMapping("/sponsor")
+    public List<SponsorPostResponseDto> getAllSponsorPosts(){
+        //search all post by Sponsor User
+        List<SponsorPost> sponsorPosts = sponsorPostService.findAllSponsorPosts();
+        Type listType = new TypeToken<List<SponsorPostResponseDto>>() {}.getType();
         return modelMapper.map(sponsorPosts, listType);
     }
 

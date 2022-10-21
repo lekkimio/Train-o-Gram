@@ -82,7 +82,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void updateCommentLikeCount(Comment comment) {
+    public void updateComment(Comment comment) {
         commentRepository.save(comment);
     }
 }

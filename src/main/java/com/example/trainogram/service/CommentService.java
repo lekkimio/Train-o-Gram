@@ -20,5 +20,5 @@ public interface CommentService {
 
     void updateComment(String token, String commentText, Long commentId) throws Status439CommentNotFound;
 
-    void updateCommentLikeCount(Comment comment);
+    void updateComment(Comment comment);
 }

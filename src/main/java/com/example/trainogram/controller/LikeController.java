@@ -59,23 +59,27 @@ public class LikeController {
     }
 
     @PostMapping("/post/like/{postId}")
-    public void addLikeToPost(@PathVariable Long postId) throws Status437PostNotFound {
-        likeService.addLikeToPost(postId);
+    public void addLikeToPost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+                              @PathVariable Long postId) throws Status437PostNotFound {
+        likeService.addLikeToPost(token,postId);
 
     }
 
     @DeleteMapping("/post/like/{postId}")
-    public void deleteLikeFromPost(@PathVariable Long postId) throws Status437PostNotFound {
-        likeService.deleteLikeFromPost(postId);
+    public void deleteLikeFromPost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+            @PathVariable Long postId) throws Status437PostNotFound {
+        likeService.deleteLikeFromPost(token, postId);
     }
 
     @PostMapping("/comment/like/{commentId}")
-    public void addLikeToComment(@PathVariable Long commentId) throws Status439CommentNotFound {
-        likeService.addLikeToComment(commentId);
+    public void addLikeToComment(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+                                 @PathVariable Long commentId) throws Status439CommentNotFound {
+        likeService.addLikeToComment(token,commentId);
     }
 
     @DeleteMapping("/comment/like/{commentId}")
-    public void deleteLikeFromComment(@PathVariable Long commentId) throws Status435NoAuthorities, Status439CommentNotFound {
-        likeService.deleteLikeFromComment(commentId);
+    public void deleteLikeFromComment(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+                                      @PathVariable Long commentId) throws Status435NoAuthorities, Status439CommentNotFound {
+        likeService.deleteLikeFromComment(token, commentId);
     }
 }

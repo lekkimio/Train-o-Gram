@@ -53,7 +53,10 @@ public class PostServiceImpl implements PostService {
         Post post = findPostById(id)
                 /*postRepository.findById(id).orElseThrow(()->new CustomException("Provide correct Post Id", HttpStatus.NOT_FOUND))*/;
         if (userService.findAuthenticatedUser(token).equals(post.getPostAuthor())){
-            if(fileService.deletePostFiles(post)) postRepository.delete(post);
+            if(fileService.deletePostFiles(post)) {
+                postRepository.deleteIfExistsByPostAsSponsorPost(post);
+                postRepository.delete(post);
+            }
         }
         else throw new Status435NoAuthorities("delete");
         }

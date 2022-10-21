@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -71,6 +72,11 @@ public class FriendshipServiceImpl implements FriendshipService {
         Friendship friendship = findByOwnerAndFriend(owner, friend);
         if (friendship != null){
             friendshipRepository.delete(friendship);
+            Friendship optionalFriendship = friendshipRepository.findByOwnerAndFriend(friend, owner).orElse(null);
+            if (optionalFriendship!=null){
+                optionalFriendship.setStatus(FriendshipStatus.REQUEST.name());
+                friendshipRepository.save(optionalFriendship);
+            }
         }
     }
 

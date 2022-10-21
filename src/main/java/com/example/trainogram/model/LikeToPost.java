@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Entity
 @Builder
 @Table(name = "post_likes")
-public class LikeToPost {
+public class LikeToPost{
 
 
     @Id

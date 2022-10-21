@@ -2,10 +2,10 @@ package com.example.trainogram.service.impl;
 
 import com.example.trainogram.exception.Status434UserNotFound;
 import com.example.trainogram.exception.Status435NoAuthorities;
+import com.example.trainogram.exception.Status437PostNotFound;
 import com.example.trainogram.exception.Status438SponsorPostNotFound;
 import com.example.trainogram.model.Post;
 import com.example.trainogram.model.SponsorPost;
-import com.example.trainogram.model.User;
 import com.example.trainogram.repository.SponsorPostRepository;
 import com.example.trainogram.service.PostService;
 import com.example.trainogram.service.SponsorPostService;
@@ -67,30 +67,49 @@ public class SponsorPostServiceImpl implements SponsorPostService {
     }
 
     @Override
-    public void deleteSponsorPost(String token, Long sponsorPostId) throws Status438SponsorPostNotFound, Status435NoAuthorities {
-    SponsorPost sponsorPost = sponsorPostRepository.findById(sponsorPostId)
-            .orElseThrow(()->new Status438SponsorPostNotFound(sponsorPostId));
-    User user = userService.findAuthenticatedUser(token);
-        if (user.equals(sponsorPost.getUser()) || user.equals(sponsorPost.getPost().getPostAuthor())) {
+    public void deleteSponsorPost(String token, Long sponsorPostId) throws Status435NoAuthorities, Status437PostNotFound, IOException, Status438SponsorPostNotFound {
+    Post sponsorPost = postService.findPostById(sponsorPostId);
+
+    SponsorPost sponsorPost1 = sponsorPostRepository.findByPost(sponsorPost);
+        System.out.println(sponsorPost1);
+
+        if (sponsorPost1!=null) {
+
+            postService.deletePost(token,sponsorPost.getId());
+            sponsorPostRepository.delete(sponsorPost1);
+
+        } else throw new Status438SponsorPostNotFound(sponsorPostId);
+
+
+
+            /*sponsorPostRepository.findById(sponsorPostId)
+            .orElseThrow(()->new Status438SponsorPostNotFound(sponsorPostId)).getPost();*/
+        /* User user = userService.findAuthenticatedUser(token);
+        if (user.equals(sponsorPost.getUser()) || user.equals(sponsorPost.getPostAuthor())) {
             sponsorPostRepository.deleteById(sponsorPostId);
-        }else throw new Status435NoAuthorities("delete");
+        }else throw new Status435NoAuthorities("delete");*/
+
     }
 
     @Override
-    public void updateSponsorPost(String token, Long sponsorPostId, String postText, MultipartFile file) throws IOException, Status438SponsorPostNotFound {
-        SponsorPost sponsorPost = sponsorPostRepository.findById(sponsorPostId)
-                .orElseThrow(()->new Status438SponsorPostNotFound(sponsorPostId));
-        User user = userService.findAuthenticatedUser(token);
-        Post post = sponsorPost.getPost();
-        if (user.equals(post.getPostAuthor())){
+    public void updateSponsorPost(String token, Long sponsorPostId, String postText, MultipartFile file) throws IOException, Status438SponsorPostNotFound, Status435NoAuthorities, Status437PostNotFound {
+        Post sponsorPost = postService.findPostById(sponsorPostId);
+//                .orElseThrow(()->new Status438SponsorPostNotFound(sponsorPostId)).getPost();
+//        User user = userService.findAuthenticatedUser(token);
+        /*if (user.equals(sponsorPost.getPostAuthor())){
             if (postText != null) {
-                post.setPostText(postText);
+                sponsorPost.setPostText(postText);
             }
             if (!file.isEmpty()) {
-                post.setPostPicture(fileService.savePostImage(file, user.getId(), post.getId()));
-                }
-            sponsorPostRepository.save(sponsorPost);
-        }
+                sponsorPost.setPostPicture(fileService.savePostImage(file, user.getId(), sponsorPost.getId()));
+            }
+        }*/
+        postService.updatePost(token,sponsorPost.getId(), postText, file);
+    }
+
+    @Override
+    public List<SponsorPost> findAllSponsorPosts() {
+        return sponsorPostRepository.findAll();
     }
 
 

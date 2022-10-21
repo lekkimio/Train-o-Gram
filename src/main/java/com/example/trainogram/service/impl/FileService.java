@@ -2,7 +2,6 @@ package com.example.trainogram.service.impl;
 
 import com.example.trainogram.model.Post;
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -26,23 +24,26 @@ public class FileService {
         return saveProcess(file, userPath);
     }
 
+    public String savePostImage(MultipartFile file, Long userId, Long postId) throws IOException {
+        String userPath = folder + userId + "\\post\\" + postId;
+        return saveProcess(file, userPath);
+    }
+
     public String saveProcess(MultipartFile file, String userPath) throws IOException {
         byte[] bytes = file.getBytes();
+
         File file1 = new File(userPath);
+        file1.mkdirs();
         String type = "."+ Objects.requireNonNull(file.getOriginalFilename()).split("\\.")[1];
         UUID fileName = UUID.randomUUID();
-        file1.mkdirs();
+
         String finalFileName = fileName + type;
+
         Path path = Paths.get(userPath + File.separator + finalFileName);
-        FileUtils.cleanDirectory(file1);
+//        FileUtils.cleanDirectory(file1);
         Files.write(path, bytes);
 
         return finalFileName;
-    }
-
-    public String savePostImage(MultipartFile file, Long userId, Long postId) throws IOException {
-        String userPath = folder + userId.toString() + "\\post\\" + postId;
-        return saveProcess(file, userPath);
     }
 
     public boolean deleteUserFiles(Long id) throws IOException {

@@ -9,6 +9,7 @@ import javax.persistence.*;
 
 
 @Entity
+@Table(name = "sponsor_post")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -20,7 +21,7 @@ public class SponsorPost {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "post_id")
     private Post post;
 
