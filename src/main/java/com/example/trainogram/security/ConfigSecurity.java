@@ -68,6 +68,7 @@ public class ConfigSecurity {
                 .authorizeRequests()
                 .antMatchers("/").permitAll()
                 .antMatchers("/auth/**").permitAll()
+                .antMatchers("/chat/**").permitAll()
                 .antMatchers("/admin/**").hasAuthority(Role.ADMIN.name())
                 .anyRequest().authenticated()
                 .and()

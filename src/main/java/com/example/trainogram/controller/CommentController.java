@@ -38,8 +38,8 @@ public class CommentController {
 
     @PostMapping("/{postId}")
     public void createComment(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
-                              @RequestParam String commentText, @PathVariable Long postId) throws Status437PostNotFound {
-        commentService.createComment(token, commentText, postId);
+                              @RequestParam String text, @PathVariable Long postId) throws Status437PostNotFound {
+        commentService.createComment(token, text, postId);
     }
 
 

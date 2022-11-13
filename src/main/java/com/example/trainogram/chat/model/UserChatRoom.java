@@ -1,31 +1,28 @@
-package com.example.trainogram.model;
+package com.example.trainogram.chat.model;
 
+import com.example.trainogram.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
+@Entity
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Builder
-public class Notification {
-
+@Table(name = "user_chatRoom")
+public class UserChatRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    private String message;
-
-    private LocalDateTime dateOfReceiving;
-
-    private NotificationStatus status;
-
-    private  String link;
+    @ManyToOne
+    @JoinColumn(name = "chat_room_id")
+    private ChatRoom chatRoom;
 
     @OneToOne
     @JoinColumn(name = "user_id")

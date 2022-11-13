@@ -26,6 +26,8 @@ public class CommentServiceImpl implements CommentService {
     private final PostService postService;
     private final NotificationService notificationService;
 
+
+    private String link = "http://localhost:8080/users/post/";
     public CommentServiceImpl(CommentRepository commentRepository, UserService userService, PostService postService, NotificationService notificationService) {
         this.commentRepository = commentRepository;
         this.userService = userService;
@@ -51,15 +53,16 @@ public class CommentServiceImpl implements CommentService {
                 .text(commentText)
                 .post(post).build()));
         postService.updatePost(post);
-        notificationService.sendNotification(post.getPostAuthor(), "User "+user.getUsername()+" commented your post");
+        notificationService.sendNotification(post.getPostAuthor(), "User "+user.getUsername()+" commented your post",link+postId );
     }
 
     @Override
     public void deleteComment(String token, Long commentId) throws Status439CommentNotFound, Status435NoAuthorities {
         User authenticatedUser = userService.findAuthenticatedUser(token);
         Comment comment = findCommentById(commentId);
-        if (authenticatedUser == comment.getCommentAuthor() || authenticatedUser == comment.getPost().getPostAuthor())
+        if (authenticatedUser.equals(comment.getCommentAuthor()) || authenticatedUser.equals(comment.getPost().getPostAuthor()) ){
             commentRepository.deleteById(commentId);
+        }
         else throw new Status435NoAuthorities("delete");
     }
 

@@ -53,9 +53,9 @@ public class FileService {
     }
 
     public boolean deletePostFiles(Post post) throws IOException {
-        File f = new File(folder+post.getPostAuthor().getId()+"\\post\\"+post.getId());
-        FileUtils.deleteDirectory(f);
-        return !f.exists();
+            File f = new File(folder+post.getPostAuthor().getId()+"\\post\\"+post.getId());
+            FileUtils.deleteDirectory(f);
+            return !f.exists();
     }
 
 }

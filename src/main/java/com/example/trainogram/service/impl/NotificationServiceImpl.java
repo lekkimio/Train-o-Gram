@@ -6,7 +6,6 @@ import com.example.trainogram.model.NotificationStatus;
 import com.example.trainogram.model.User;
 import com.example.trainogram.repository.NotificationRepository;
 import com.example.trainogram.service.NotificationService;
-import com.example.trainogram.service.UserService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,12 +22,13 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendNotification(User user, String s) {
+    public void sendNotification(User user, String s, String s1) {
         notificationRepository.save(Notification.builder()
                 .user(user)
                 .message(s)
                 .dateOfReceiving(LocalDateTime.now())
                 .status(NotificationStatus.UNSEEN)
+                        .link(s1)
                 .build());
     }
 

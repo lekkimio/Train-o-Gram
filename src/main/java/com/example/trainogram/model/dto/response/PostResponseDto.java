@@ -15,5 +15,4 @@ public class PostResponseDto implements Serializable {
     private String postPicture;
     private String postText;
     private LocalDateTime pubDate;
-    private List<CommentResponseDto> comments;
 }

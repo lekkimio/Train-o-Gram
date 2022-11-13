@@ -12,4 +12,5 @@ public class NotificationResponseDto implements Serializable {
     private String message;
     private LocalDateTime dateOfReceiving;
     private NotificationStatus status;
+    private String link;
 }

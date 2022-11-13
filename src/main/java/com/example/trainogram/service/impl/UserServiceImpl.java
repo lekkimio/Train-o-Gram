@@ -139,7 +139,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Notification getNotificationById(String token, Long notificationId) throws Status435NoAuthorities, Status440NotificationNotFound {
         Notification notification = notificationService.getNotificationById(notificationId);
-        if (notification.getUser() == findAuthenticatedUser(token)) {
+        if (notification.getUser().equals(findAuthenticatedUser(token))) {
             return notification;
         } else {
             throw new Status435NoAuthorities("get notification");

@@ -1,6 +1,6 @@
 package com.example.trainogram.model;
 
-public enum FriendshipStatus {
+public enum SubscriptionStatus {
     REQUEST,
-    FRIEND
+    MUTUAL
 }

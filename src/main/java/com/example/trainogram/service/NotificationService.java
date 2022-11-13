@@ -10,7 +10,7 @@ import java.util.List;
 public interface NotificationService {
 
 
-    void sendNotification(User user, String s);
+    void sendNotification(User user, String s, String s1);
 
     List<Notification> getAllNotification(User user);
 

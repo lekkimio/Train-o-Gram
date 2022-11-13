@@ -24,14 +24,12 @@ public class SponsorPostServiceImpl implements SponsorPostService {
     private final SponsorPostRepository sponsorPostRepository;
     private final PostService postService;
     private final UserService userService;
-    private final FileService fileService;
 
     @Autowired
-    public SponsorPostServiceImpl(SponsorPostRepository sponsorPostRepository, PostService postService, UserService userService, FileService fileService) {
+    public SponsorPostServiceImpl(SponsorPostRepository sponsorPostRepository, PostService postService, UserService userService) {
         this.sponsorPostRepository = sponsorPostRepository;
         this.postService = postService;
         this.userService = userService;
-        this.fileService = fileService;
     }
 
 

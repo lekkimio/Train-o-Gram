@@ -1,5 +1,6 @@
 package com.example.trainogram.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -35,8 +37,7 @@ public class Post {
 
     private LocalDateTime pubDate;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    public List<Comment> comments;
-
+    @OneToMany()
+    private List<Comment> comments;
 
 }

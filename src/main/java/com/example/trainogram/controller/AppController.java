@@ -24,17 +24,7 @@ public class AppController {
     }
 
     @GetMapping("/")
-    private String getHomePage(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token){
-        String t = token.substring("Bearer ".length());
-        System.out.println(t);
-        String username = Jwts.parser().setSigningKey("somesecretstring").parseClaimsJws(t).getBody().getSubject();;
-        System.out.println(username);
-
-        UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-        System.out.println(userDetails);
-        System.out.println(userDetails.getAuthorities());
-        System.out.println(userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList().get(0));
-
+    private String getHomePage(){
         return "hello" +" "+ SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
