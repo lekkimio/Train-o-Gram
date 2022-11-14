@@ -17,6 +17,7 @@ import java.io.IOException;
 public class ChatEndpoint {
 
 
+
     public Session session;
 
     @OnOpen
@@ -33,6 +34,9 @@ public class ChatEndpoint {
 
     private static void broadcast(ChatMessage message) throws IOException, EncodeException {
        //get session of recipient -> sendMsg to recipient
+
+
+
 
     }
 }

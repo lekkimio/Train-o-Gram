@@ -1,12 +1,13 @@
 package com.example.trainogram.chat;
 
 import com.example.trainogram.chat.model.ChatMessage;
-import com.example.trainogram.chat.util.ChatFacade;
+import com.example.trainogram.chat.model.ChatMessageFE;
+import com.example.trainogram.chat.util.ChatService;
 import com.example.trainogram.exception.Status434UserNotFound;
-import com.example.trainogram.model.User;
+import com.example.trainogram.exception.Status452ChatAlreadyExistException;
+import com.example.trainogram.exception.Status453ChatNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,23 +17,26 @@ import java.util.List;
 public class ChatController {
 
     @Autowired
-    private ChatFacade chatFacade;
+    private ChatService chatService;
 
-
-    @GetMapping("/get-chat-message")
-    public List<ChatMessage> getChatMessages(Long chatId){
-        return null;
-    }
 
     @PostMapping("/create-chat")
-    public List<Long> createChat(Long recipientId,
-                                 @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) throws Status434UserNotFound {
-        return chatFacade.createChat(recipientId, token);
+    public Long createChat(Long recipientId,
+                           @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) throws Status434UserNotFound, Status452ChatAlreadyExistException {
+        return chatService.createNewChat(recipientId, token);
     }
 
-    @DeleteMapping("/delete-chat")
-    public void deleteChat(Long chatId, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
-        chatFacade.deleteChat(chatId, token);
+    @GetMapping("/messages/{chatId}")
+    public List<ChatMessageFE> getChatMessage(
+            @PathVariable Long chatId,
+            @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
+        return chatService.findChatMessagesAndMarkDelivered(chatId, token);
+    }
+
+    @DeleteMapping("/delete/{chatId}")
+    public void deleteChat(@PathVariable Long chatId, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) throws Status453ChatNotFoundException {
+        chatService.deleteChat(chatId, token);
+
     }
 
 

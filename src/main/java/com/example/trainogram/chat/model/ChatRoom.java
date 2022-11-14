@@ -1,5 +1,6 @@
 package com.example.trainogram.chat.model;
 
+import com.example.trainogram.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Data
@@ -28,6 +30,12 @@ public class ChatRoom {
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "chatRoom")
-    private List<UserChatRoom> userChatRooms = new java.util.ArrayList<>();
+    List<UserChatRoom> userChatRooms;
 
+
+    public List<User> getUsers(){
+        return userChatRooms.stream()
+                .map(UserChatRoom::getUser)
+                .collect(Collectors.toList());
+    }
 }
