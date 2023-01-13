@@ -36,6 +36,13 @@ public class CommentController {
         return modelMapper.map(comments,listType);
     }
 
+    @GetMapping("/get-comment/{commentId}")
+    public CommentResponseDto getComment(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+                                                   @PathVariable Long commentId) throws Status439CommentNotFound {
+
+        return modelMapper.map(commentService.getComment(token, commentId), CommentResponseDto.class);
+    }
+
     @PostMapping("/{postId}")
     public void createComment(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
                               @RequestParam String text, @PathVariable Long postId) throws Status437PostNotFound {

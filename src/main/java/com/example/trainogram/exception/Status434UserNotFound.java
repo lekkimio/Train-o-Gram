@@ -13,7 +13,7 @@ public class Status434UserNotFound extends ErrorCodeException {
         super(CODE, "User Not Found by id: " + id);
     }
 
-    public Status434UserNotFound(String username) {
-        super(CODE, "" ,"User Not Found by username: " + username);
+    public Status434UserNotFound(String msg) {
+        super(CODE, msg);
     }
 }

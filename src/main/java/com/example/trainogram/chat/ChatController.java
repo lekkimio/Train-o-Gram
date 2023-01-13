@@ -1,7 +1,6 @@
 package com.example.trainogram.chat;
 
 import com.example.trainogram.chat.model.ChatMessage;
-import com.example.trainogram.chat.model.ChatMessageFE;
 import com.example.trainogram.chat.util.ChatService;
 import com.example.trainogram.exception.Status434UserNotFound;
 import com.example.trainogram.exception.Status452ChatAlreadyExistException;
@@ -27,7 +26,7 @@ public class ChatController {
     }
 
     @GetMapping("/messages/{chatId}")
-    public List<ChatMessageFE> getChatMessage(
+    public List<ChatMessage> getChatMessage(
             @PathVariable Long chatId,
             @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
         return chatService.findChatMessagesAndMarkDelivered(chatId, token);

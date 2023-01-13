@@ -1,6 +1,9 @@
 package com.example.trainogram.repository;
 
+import com.example.trainogram.model.Comment;
 import com.example.trainogram.model.Post;
+import com.example.trainogram.model.PostLike;
+import com.example.trainogram.model.User;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
@@ -16,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
@@ -32,4 +36,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Transactional
     @Query("delete from SponsorPost p where p.post = ?1")
     void deleteIfExistsByPostAsSponsorPost(Post post);
+
+    List<Post> findAllByPostAuthor(User user);
+
+
+
+//   @Query(value = "select p from Post where  c")
+//    Post findPostByComment(Comment comment);
 }

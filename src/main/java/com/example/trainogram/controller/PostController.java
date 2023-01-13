@@ -6,6 +6,7 @@ import com.example.trainogram.exception.Status437PostNotFound;
 import com.example.trainogram.exception.Status438SponsorPostNotFound;
 import com.example.trainogram.model.Post;
 import com.example.trainogram.model.SponsorPost;
+import com.example.trainogram.model.dto.SponsorReport;
 import com.example.trainogram.model.dto.response.PostResponseDto;
 import com.example.trainogram.model.dto.response.SponsorPostResponseDto;
 import com.example.trainogram.service.PostService;
@@ -13,7 +14,6 @@ import com.example.trainogram.service.SponsorPostService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -42,23 +42,16 @@ public class PostController {
     }
 
 
-    @GetMapping("/{id}")
-    public PostResponseDto getUserPost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
-                                       @PathVariable Long id) throws Status437PostNotFound {
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody PostResponseDto getUserPost(@PathVariable Long id) throws Status437PostNotFound {
         return modelMapper.map(postService.findPostById(id), PostResponseDto.class);
     }
 
 
-    @GetMapping(value = "/image/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public @ResponseBody InputStreamResource getPostPicture(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
-                                                            @PathVariable Long id) throws Status437PostNotFound, IOException {
-        return postService.getPostPicture(token, id);
-    }
-
     @PostMapping()
     public void createPost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
                            @RequestParam(required = false) String postText,
-                           @RequestParam MultipartFile postPicture) throws IOException {
+                           @RequestParam List<MultipartFile> postPicture) throws IOException {
         postService.createPost(token, postText, postPicture);
     }
 
@@ -70,13 +63,13 @@ public class PostController {
     @PutMapping("/{id}")
     public void updatePost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
                            @RequestParam(required = false) String postText,
-                           @RequestParam(required = false) MultipartFile file,
+                           @RequestParam(required = false) List<MultipartFile> file,
                            @PathVariable Long id) throws Status437PostNotFound, IOException, Status435NoAuthorities {
         postService.updatePost(token, id, postText, file);
     }
 
     /**
-    sponsor posts
+    Sponsor posts
     **/
 
     @GetMapping("/sponsor/{sponsorPostId}")
@@ -91,7 +84,7 @@ public class PostController {
     public void createSponsorPost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
                                   @RequestParam String postText,
                                   @RequestParam Long sponsorId,
-                                  @RequestParam MultipartFile file) throws Status434UserNotFound, IOException {
+                                  @RequestParam List<MultipartFile> file) throws Status434UserNotFound, IOException {
         sponsorPostService.createSponsorPost(token, postText,file, sponsorId);
     }
 
@@ -99,7 +92,7 @@ public class PostController {
     public void updateSponsorPost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
                                   @PathVariable Long sponsorPostId,
                                   @RequestParam String postText,
-                                  @RequestParam MultipartFile file) throws IOException, Status438SponsorPostNotFound, Status435NoAuthorities, Status437PostNotFound {
+                                  @RequestParam List<MultipartFile> file) throws IOException, Status438SponsorPostNotFound, Status435NoAuthorities, Status437PostNotFound {
         sponsorPostService.updateSponsorPost(token, sponsorPostId, postText, file);
     }
 
@@ -130,6 +123,12 @@ public class PostController {
         List<SponsorPost> sponsorPosts = sponsorPostService.findAllSponsorPosts();
         Type listType = new TypeToken<List<SponsorPostResponseDto>>() {}.getType();
         return modelMapper.map(sponsorPosts, listType);
+    }
+
+
+    @GetMapping("/sponsor/report")
+    public List<SponsorReport> getReport(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token) throws Status434UserNotFound {
+        return sponsorPostService.getReport(token);
     }
 
 }

@@ -5,40 +5,46 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 
 public class CustomUserDetails implements UserDetails {
-   private final User user;
 
-//    private final String username;
-//    private final String password;
-//    private final List<SimpleGrantedAuthority> authorities;
 
-    public CustomUserDetails(/*String username, String password, List<SimpleGrantedAuthority> authorities,*/ User user) {
-        this.user = user;
-//
-//        this.username = username;
-//        this.password = password;
-//        this.authorities = authorities;
+//   private final User user;
+
+    private final Long id;
+    private final String username;
+    private final String password;
+    private final List<?extends GrantedAuthority> authorities;
+
+    public CustomUserDetails(Long id, String username, String password, List<? extends GrantedAuthority> authorities) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.authorities = authorities;
     }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(user.getRole().name()));
+        return authorities;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return username;
     }
 
     @Override
@@ -61,10 +67,10 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 
-    public static UserDetails fromUser(User user){
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                Collections.singleton(new SimpleGrantedAuthority(user.getRole().name())));
-    }
+//    public static UserDetails fromUser(User user){
+//        return new org.springframework.security.core.userdetails.User(
+//                user.getUsername(),
+//                user.getPassword(),
+//                Collections.singleton(new SimpleGrantedAuthority(user.getRole().name())));
+//    }
 }

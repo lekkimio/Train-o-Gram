@@ -3,7 +3,9 @@ package com.example.trainogram.security.jwt;
 import com.example.trainogram.exception.Status450JwtException;
 import com.example.trainogram.security.CustomUserDetailsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,9 +17,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import static java.util.Arrays.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -32,14 +35,13 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
-    //ToDO:
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
             if (request.getServletPath().equals("/auth/login")  || request.getServletPath().equals("/auth/token/refresh")){
                 filterChain.doFilter(request,response);
             }else {
                 String authorizationHeader = request.getHeader(AUTHORIZATION);
-                if (authorizationHeader!=null && authorizationHeader.startsWith("Bearer ")){
+                if (authorizationHeader!=null && authorizationHeader.startsWith("Bearer")){
                     try {
                     String token = authorizationHeader.substring("Bearer ".length());
                         validateToken(token);
@@ -47,7 +49,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                         String username = Jwts.parser().setSigningKey("somesecretstring").parseClaimsJws(token).getBody().getSubject();;
                         UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
                         UsernamePasswordAuthenticationToken authenticationToken =
-                                new UsernamePasswordAuthenticationToken(userDetails,"",userDetails.getAuthorities());
+                        new UsernamePasswordAuthenticationToken(userDetails,"",userDetails.getAuthorities());
+
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
                     filterChain.doFilter(request,response);

@@ -17,29 +17,32 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
 
+//    private String link = "http://localhost:8080/users/post/";
+
+
     public NotificationServiceImpl(NotificationRepository notificationRepository) {
         this.notificationRepository = notificationRepository;
     }
 
     @Override
-    public void sendNotification(User user, String s, String s1) {
+    public void sendNotification(User user, String message, String link) {
         notificationRepository.save(Notification.builder()
                 .user(user)
-                .message(s)
+                .message(message)
                 .dateOfReceiving(LocalDateTime.now())
                 .status(NotificationStatus.UNSEEN)
-                        .link(s1)
+                        .link(link)
                 .build());
     }
 
     @Override
     public List<Notification> getAllNotification(User user) {
-        /*List<Notification> notifications = notificationRepository.findAllByUser(user);
+        List<Notification> notifications = notificationRepository.findAllByUser(user);
         for (Notification n: notifications) {
             n.setStatus(NotificationStatus.SEEN);
         }
-        return notificationRepository.saveAll(notifications);*/
-        return notificationRepository.findAllByUser(user);
+        return notificationRepository.saveAll(notifications);
+//        return notificationRepository.findAllByUser(user);
     }
 
     @Override

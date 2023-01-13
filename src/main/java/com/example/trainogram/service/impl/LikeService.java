@@ -4,10 +4,10 @@ import com.example.trainogram.exception.Status435NoAuthorities;
 import com.example.trainogram.exception.Status437PostNotFound;
 import com.example.trainogram.exception.Status439CommentNotFound;
 import com.example.trainogram.model.*;
-import com.example.trainogram.repository.LikeRepository;
-import com.example.trainogram.repository.LikeToCommentRepository;
-import com.example.trainogram.repository.LikeToPostRepository;
+import com.example.trainogram.repository.CommentLikeRepository;
+import com.example.trainogram.repository.PostLikeRepository;
 import com.example.trainogram.service.CommentService;
+import com.example.trainogram.service.NotificationService;
 import com.example.trainogram.service.PostService;
 import com.example.trainogram.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,51 +16,49 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+//@Transactional
 @RequiredArgsConstructor
 public class LikeService {
-
-    private final LikeRepository likeRepository;
-    private final LikeToPostRepository likeToPostRepository;
-    private final LikeToCommentRepository likeToCommentRepository;
+    
+    private final PostLikeRepository postLikeRepository;
+    private final CommentLikeRepository commentLikeRepository;
     private final PostService postService;
     private final CommentService commentService;
     private final UserService userService;
+    private final NotificationService notificationService;
 
-//    public LikeService(LikeRepository likeRepository, PostService postService, CommentService commentService, UserService userService) {
-//        this.likeRepository = likeRepository;
-//        this.postService = postService;
-//        this.commentService = commentService;
-//        this.userService = userService;
-//    }
 
-    public List<User> findAllLikedUsersToPost(String token, Long postId) {
-        return likeToPostRepository.findAllUsersToPost(postId);
+    public List<User> findAllLikedUsersToPost(Long postId) {
+        return postLikeRepository.findAllUsersToPost(postId);
 
     }
 
     public List<User> findAllLikedUsersToComment(String token, Long commentId) {
         userService.findUserByUsername(token);
-        return likeToCommentRepository.findAllUsersToComment(commentId);
+        return commentLikeRepository.findAllUsersToComment(commentId);
     }
 
     public List<Post> findAllLikedPostsByUser(String token) {
         User user = userService.findAuthenticatedUser(token);
 
-        return likeToPostRepository.findAllPostsByUser(user);
+        return postLikeRepository.findAllPostsByUser(user);
     }
 
     public void addLikeToPost(String token, Long postId) throws Status437PostNotFound {
         Post post = postService.findPostById(postId);
         User user = userService.findAuthenticatedUser(token);
-        Like like = likeRepository.findByUser(user)
-                .orElse(Like.builder().user(user).build());
+        PostLike postLike = postLikeRepository.findLikeByUserAndPost(user,post);
 
-        if(likeToPostRepository.findLikeByUserAndPost(user,post)==null) {
-            likeToPostRepository.save(LikeToPost.builder()
-                    .like(like)
+        if(postLike==null) {
+            postLikeRepository.save(PostLike.builder()
                     .post(post)
+                    .user(user)
                     .build());
-            post.setLikes(post.getLikes()+1);
+            String link = "http://localhost:8080/users/post/";
+            notificationService.sendNotification(
+                    post.getPostAuthor(),
+                    "User "+user.getUsername()+" liked your post",
+                    link +postId);
             postService.updatePost(post);
         }
     }
@@ -68,43 +66,39 @@ public class LikeService {
     public void deleteLikeFromPost(String token, Long postId) throws Status437PostNotFound {
         Post post = postService.findPostById(postId);
         User user = userService.findAuthenticatedUser(token);
-        LikeToPost likeToPost = likeToPostRepository.findLikeByUserAndPost(user, post);
+        PostLike postLike = postLikeRepository.findLikeByUserAndPost(user, post);
 
-        if(likeToPost !=null) {
-            likeToPostRepository.delete(likeToPost);
-            post.setLikes(post.getLikes()-1);
-            postService.updatePost(post);
+        if(postLike != null) {
+            postLikeRepository.deleteById(postLike.getId());
         }
     }
 
     public void addLikeToComment(String token, Long commentId) throws Status439CommentNotFound {
         Comment comment = commentService.findCommentById(commentId);
         User user = userService.findAuthenticatedUser(token);
-        Like like = likeRepository.findByUser(user)
-                .orElse(Like.builder().user(user).build());
+        CommentLike commentLike = commentLikeRepository.findLikeByUserAndComment(user, comment);
 
-        if (likeToCommentRepository.findLikeByUserAndComment(user,comment)==null) {
-
-
-            likeToCommentRepository.save(LikeToComment.builder()
-                    .like(like)
+        if (commentLike == null) {
+            commentLikeRepository.save(CommentLike.builder()
                     .comment(comment)
+                    .user(user)
                     .build());
-
-            comment.setLikes(comment.getLikes()+1);
-            commentService.updateComment(comment);
+            String link = "http://localhost:8080/users/post/comment/get-comment/";
+            notificationService.sendNotification(
+                    comment.getCommentAuthor(),
+                    "User "+user.getUsername()+" liked your comment",
+                    link+commentId);
 
         }
+
     }
 
-    public void deleteLikeFromComment(String token, Long commentId) throws Status439CommentNotFound, Status435NoAuthorities {
+    public void deleteLikeFromComment(String token, Long commentId) throws Status439CommentNotFound {
         Comment comment = commentService.findCommentById(commentId);
         User user = userService.findAuthenticatedUser(token);
-        LikeToComment likeToComment = likeToCommentRepository.findLikeByUserAndComment(user, comment);
-        if (likeToComment != null){
-            likeToCommentRepository.delete(likeToComment);
-            comment.setLikes(comment.getLikes()-1);
-            commentService.updateComment(comment);
+        CommentLike commentLike = commentLikeRepository.findLikeByUserAndComment(user, comment);
+        if (commentLike != null){
+            commentLikeRepository.delete(commentLike);
         }
     }
 }

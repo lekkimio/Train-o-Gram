@@ -1,5 +1,6 @@
 package com.example.trainogram.controller;
 
+import com.example.trainogram.security.CustomUserDetails;
 import com.example.trainogram.security.CustomUserDetailsService;
 import io.jsonwebtoken.Jwts;
 import org.springframework.http.HttpHeaders;
@@ -16,16 +17,14 @@ import java.util.stream.Collectors;
 @RestController
 public class AppController {
 
-
-    private final CustomUserDetailsService userDetailsService;
-
-    public AppController(CustomUserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
-
     @GetMapping("/")
     private String getHomePage(){
         return "hello" +" "+ SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+    @GetMapping("/test")
+    private String getHomePage(CustomUserDetails userDetails){
+        return "hello" +" "+ userDetails.getUsername();
     }
 
     @GetMapping("/admin")

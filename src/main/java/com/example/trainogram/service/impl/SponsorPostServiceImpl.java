@@ -6,6 +6,8 @@ import com.example.trainogram.exception.Status437PostNotFound;
 import com.example.trainogram.exception.Status438SponsorPostNotFound;
 import com.example.trainogram.model.Post;
 import com.example.trainogram.model.SponsorPost;
+import com.example.trainogram.model.User;
+import com.example.trainogram.model.dto.SponsorReport;
 import com.example.trainogram.repository.SponsorPostRepository;
 import com.example.trainogram.service.PostService;
 import com.example.trainogram.service.SponsorPostService;
@@ -15,11 +17,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
 @Service
 public class SponsorPostServiceImpl implements SponsorPostService {
+
+    // TODO: 07.12.2022 sponsor report
+
+
 
     private final SponsorPostRepository sponsorPostRepository;
     private final PostService postService;
@@ -34,7 +41,7 @@ public class SponsorPostServiceImpl implements SponsorPostService {
 
 
     @Override
-    public SponsorPost createSponsorPost(String token, String postText, MultipartFile file, Long sponsorId) throws IOException, Status434UserNotFound {
+    public SponsorPost createSponsorPost(String token, String postText, List<MultipartFile> file, Long sponsorId) throws IOException, Status434UserNotFound {
 
 //        Post post = postRepository.save(Post.builder().postText(postText)
 //                        .id(postRepository.max()+1)
@@ -45,7 +52,7 @@ public class SponsorPostServiceImpl implements SponsorPostService {
 //                        .build());
         Post post = postService.createPost(token, postText, file);
         return sponsorPostRepository.save(SponsorPost.builder()
-                        .id(sponsorPostRepository.max()+1)
+//                        .id(sponsorPostRepository.max().orElse(1L))
                         .post(post)
                         .user(userService.findById(sponsorId))
                         .build());
@@ -66,7 +73,7 @@ public class SponsorPostServiceImpl implements SponsorPostService {
 
     @Override
     public void deleteSponsorPost(String token, Long sponsorPostId) throws Status435NoAuthorities, Status437PostNotFound, IOException, Status438SponsorPostNotFound {
-    Post sponsorPost = postService.findPostById(sponsorPostId);
+    /*Post sponsorPost = postService.findPostById(sponsorPostId);
 
     SponsorPost sponsorPost1 = sponsorPostRepository.findByPost(sponsorPost);
         System.out.println(sponsorPost1);
@@ -76,21 +83,20 @@ public class SponsorPostServiceImpl implements SponsorPostService {
             postService.deletePost(token,sponsorPost.getId());
             sponsorPostRepository.delete(sponsorPost1);
 
-        } else throw new Status438SponsorPostNotFound(sponsorPostId);
+        } else throw new Status438SponsorPostNotFound(sponsorPostId);*/
 
 
 
-            /*sponsorPostRepository.findById(sponsorPostId)
-            .orElseThrow(()->new Status438SponsorPostNotFound(sponsorPostId)).getPost();*/
-        /* User user = userService.findAuthenticatedUser(token);
-        if (user.equals(sponsorPost.getUser()) || user.equals(sponsorPost.getPostAuthor())) {
+           SponsorPost sponsorPost = sponsorPostRepository.findById(sponsorPostId).orElseThrow(()->new Status438SponsorPostNotFound(sponsorPostId));
+         User user = userService.findAuthenticatedUser(token);
+        if (user.equals(sponsorPost.getPost().getPostAuthor()) || user.equals(sponsorPost.getUser())) {
             sponsorPostRepository.deleteById(sponsorPostId);
-        }else throw new Status435NoAuthorities("delete");*/
+        }else throw new Status435NoAuthorities("delete");
 
     }
 
     @Override
-    public void updateSponsorPost(String token, Long sponsorPostId, String postText, MultipartFile file) throws IOException, Status438SponsorPostNotFound, Status435NoAuthorities, Status437PostNotFound {
+    public void updateSponsorPost(String token, Long sponsorPostId, String postText, List<MultipartFile> file) throws IOException, Status438SponsorPostNotFound, Status435NoAuthorities, Status437PostNotFound {
         Post sponsorPost = postService.findPostById(sponsorPostId);
 //                .orElseThrow(()->new Status438SponsorPostNotFound(sponsorPostId)).getPost();
 //        User user = userService.findAuthenticatedUser(token);
@@ -110,8 +116,23 @@ public class SponsorPostServiceImpl implements SponsorPostService {
         return sponsorPostRepository.findAll();
     }
 
+    @Override
+    public List<SponsorReport> getReport(String token) throws Status434UserNotFound {
+        User sponsor = userService.findAuthenticatedUser(token);
+        List<SponsorPost> sponsorPosts = findAllSponsorPost(sponsor.getId());
 
-//    public String saveImage(MultipartFile file, Long userId, Long postId) throws IOException {
+        List<SponsorReport> reports = new ArrayList<>();
+
+        sponsorPosts.forEach(sponsorPost -> reports.add(
+                SponsorReport.builder()
+                        .postId(sponsorPost.getPost().getId())
+                        .likes(sponsorPost.getPost().getLikes())
+                        .comments(sponsorPost.getPost().getComments().size()).build())
+        );
+        return reports;
+    }
+
+    //    public String saveImage(MultipartFile file, Long userId, Long postId) throws IOException {
 //        byte[] bytes = file.getBytes();
 //        String folder = "D:\\Games\\Projects\\Train-o-Gram\\src\\main\\resources\\static\\";
 //        String userPath = folder +userId.toString()+"\\post\\"+postId;
@@ -123,34 +144,4 @@ public class SponsorPostServiceImpl implements SponsorPostService {
 //        return file.getOriginalFilename();
 //    }
 
-
-
-
-    /*@Override
-    public SponsorPost addSponsorPost(Post post, User sponsor) {
-        SponsorPost sponsorPost = new SponsorPost();
-        sponsorPost.setPost(post);
-        sponsorPost.setUser(sponsor);
-        return sponsorPostRepository.save(sponsorPost);
-    }
-
-    @Override
-    public void deleteSponsorPost(Long id) {
-        sponsorPostRepository.deleteById(id);
-    }
-
-    @Override
-    public List<SponsorPost> findAllSponsorPostsByUser(Long id) {
-        return sponsorPostRepository.findAllByUserId(id);
-    }
-
-    @Override
-    public SponsorPost findBySponsorPostId(Long id) {
-        return sponsorPostRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("No post with this id"));
-    }
-
-    @Override
-    public void updateSponsorPost(SponsorPost sponsorPost) {
-        sponsorPostRepository.save(sponsorPost);
-    }*/
 }

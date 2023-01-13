@@ -36,7 +36,7 @@ public class LikeController {
     @GetMapping("/post/like/{postId}")
     public List<UserResponseDto> getAllLikedUsersToPost(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
                                                         @PathVariable Long postId) {
-        List<User> users = likeService.findAllLikedUsersToPost(token,postId);
+        List<User> users = likeService.findAllLikedUsersToPost(postId);
         Type listType = new TypeToken<List<UserResponseDto>>(){}.getType();
         return modelMapper.map(users,listType);
 

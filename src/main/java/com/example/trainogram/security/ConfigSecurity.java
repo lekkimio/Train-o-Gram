@@ -4,9 +4,10 @@ import com.example.trainogram.model.Role;
 import com.example.trainogram.repository.UserRepository;
 import com.example.trainogram.security.jwt.CustomAuthenticationFilter;
 import com.example.trainogram.security.jwt.CustomAuthorizationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -26,7 +27,9 @@ public class ConfigSecurity {
     private final CustomUserDetailsService userDetailsService;
     private final UserRepository userRepository;
 
-    public ConfigSecurity(CustomUserDetailsService userDetailsService, UserRepository userRepository) {
+    @Autowired
+    public ConfigSecurity(CustomUserDetailsService userDetailsService,
+                          UserRepository userRepository) {
         this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
     }
@@ -44,16 +47,16 @@ public class ConfigSecurity {
     }
 
     @Bean
-    public RoleVoter roleVoter() {
-        RoleVoter roleVoter = new RoleVoter();
-        roleVoter.setRolePrefix("");
-        return roleVoter;
+    public CustomAuthorizationFilter customAuthorizationFilter(){
+        return new CustomAuthorizationFilter(userDetailsService);
     }
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.
+                                                            getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
@@ -61,16 +64,19 @@ public class ConfigSecurity {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager, userRepository);
         customAuthenticationFilter.setFilterProcessesUrl("/auth/login");
 
+
         http
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
                 .antMatchers("/").permitAll()
-                .antMatchers("/auth/**").permitAll()
                 .antMatchers("/chat/**").permitAll()
+                .antMatchers("/auth/**").permitAll()
                 .antMatchers("/admin/**").hasAuthority(Role.ADMIN.name())
                 .anyRequest().authenticated()
+//                .and()
+//                .formLogin().loginPage("/auth/login")
                 .and()
                 .addFilter(customAuthenticationFilter)
                 .addFilterBefore(new CustomAuthorizationFilter(userDetailsService), UsernamePasswordAuthenticationFilter.class)

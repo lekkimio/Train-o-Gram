@@ -27,6 +27,7 @@ public class ChatMessage {
     private Long recipientId;
 
     private String content;
+
     @CreatedDate
     private Date createdDate;
 

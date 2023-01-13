@@ -1,11 +1,11 @@
 package com.example.trainogram.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
@@ -23,6 +23,11 @@ public class User {
 
     private String password;
 
+    @Email
+    @NotNull
+    @Column(unique = true)
+    private String email;
+
     private String avatar;
 
 //    @Column(name = "role", columnDefinition = "VARCHAR(20)")
@@ -33,5 +38,7 @@ public class User {
 //    @Convert(converter = RoleConverter.FieldConverter.class)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+//    private boolean deleted;
 
 }

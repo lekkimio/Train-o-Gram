@@ -12,22 +12,21 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Builder
-@Table(name = "post_likes")
-public class LikeToPost{
-
+public class Follow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "like_ID")
-    private Like like;
-
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "post_ID")
-    private Post post;
+    @JoinColumn(name = "owner_ID")
+    private User owner;
 
 
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "friend_ID")
+    private User friend;
+
+//    private String status;
 
 }

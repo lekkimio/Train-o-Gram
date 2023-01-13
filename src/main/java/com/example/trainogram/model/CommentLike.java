@@ -12,21 +12,21 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Builder
-public class Subscription {
+@Table(name = "comment_likes")
+public class CommentLike {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "owner_ID")
-    private User owner;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "comment_ID")
+    private Comment comment;
 
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "friend_ID")
-    private User friend;
-
-    private String status;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_ID")
+    private User user;
 
 }

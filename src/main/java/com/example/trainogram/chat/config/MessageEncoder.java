@@ -24,4 +24,5 @@ public class MessageEncoder implements Encoder.Text<ChatMessage> {
     public void destroy() {
         // Close resources
     }
+
 }

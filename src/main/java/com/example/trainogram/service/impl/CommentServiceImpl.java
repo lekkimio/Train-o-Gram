@@ -27,7 +27,6 @@ public class CommentServiceImpl implements CommentService {
     private final NotificationService notificationService;
 
 
-    private String link = "http://localhost:8080/users/post/";
     public CommentServiceImpl(CommentRepository commentRepository, UserService userService, PostService postService, NotificationService notificationService) {
         this.commentRepository = commentRepository;
         this.userService = userService;
@@ -45,21 +44,23 @@ public class CommentServiceImpl implements CommentService {
     public void createComment(String token, String commentText, Long postId) throws Status437PostNotFound {
         User user = userService.findAuthenticatedUser(token);
         Post post = postService.findPostById(postId);
-        post.getComments().add(
+//        post.getComments().add(
                 commentRepository.save(Comment.builder()
                 .commentAuthor(user)
                 .commentPub(LocalDateTime.now())
-                .likes(0)
+//                .likes(0)
                 .text(commentText)
-                .post(post).build()));
+                .post(post).build());
         postService.updatePost(post);
-        notificationService.sendNotification(post.getPostAuthor(), "User "+user.getUsername()+" commented your post",link+postId );
+        String link = "http://localhost:8080/users/post/comment/get-comment/";
+        notificationService.sendNotification(post.getPostAuthor(), "User "+user.getUsername()+" commented your post", link +postId );
     }
 
     @Override
     public void deleteComment(String token, Long commentId) throws Status439CommentNotFound, Status435NoAuthorities {
         User authenticatedUser = userService.findAuthenticatedUser(token);
         Comment comment = findCommentById(commentId);
+//        Post post = postService.findPostByComment(comment);
         if (authenticatedUser.equals(comment.getCommentAuthor()) || authenticatedUser.equals(comment.getPost().getPostAuthor()) ){
             commentRepository.deleteById(commentId);
         }
@@ -87,5 +88,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void updateComment(Comment comment) {
         commentRepository.save(comment);
+    }
+
+    @Override
+    public Comment getComment(String token, Long commentId) throws Status439CommentNotFound {
+        return commentRepository.findById(commentId).orElseThrow(()->new Status439CommentNotFound(commentId));
     }
 }

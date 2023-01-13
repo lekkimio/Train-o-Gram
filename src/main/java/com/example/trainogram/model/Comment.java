@@ -1,12 +1,10 @@
 package com.example.trainogram.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -14,7 +12,6 @@ import java.time.LocalDateTime;
 @Entity
 @Builder
 public class Comment {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,14 +21,20 @@ public class Comment {
     @JoinColumn(name = "comment_author_id")
     private User commentAuthor;
 
-    private String text;
-    private Integer likes;
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "comment", fetch = FetchType.EAGER, orphanRemoval = true)
+    private Set<CommentLike> likes;
 
-    private LocalDateTime commentPub;
-
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    private LocalDateTime commentPub;
+    private String text;
+
+    public Integer getLikes() {
+        return Math.toIntExact(likes.stream().count());
+    }
+
 
 }

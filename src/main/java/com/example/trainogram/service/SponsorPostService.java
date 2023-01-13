@@ -6,6 +6,7 @@ import com.example.trainogram.exception.Status435NoAuthorities;
 import com.example.trainogram.exception.Status437PostNotFound;
 import com.example.trainogram.exception.Status438SponsorPostNotFound;
 import com.example.trainogram.model.SponsorPost;
+import com.example.trainogram.model.dto.SponsorReport;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.util.List;
 
 public interface SponsorPostService {
 
-    SponsorPost createSponsorPost(String token, String postText, MultipartFile file, Long sponsorId) throws IOException, Status434UserNotFound;
+    SponsorPost createSponsorPost(String token, String postText, List<MultipartFile> file, Long sponsorId) throws IOException, Status434UserNotFound;
 
     SponsorPost findSponsorPost(Long sponsorPostId) throws Status438SponsorPostNotFound;
 
@@ -22,7 +23,9 @@ public interface SponsorPostService {
 
     void deleteSponsorPost(String token, Long sponsorId) throws Status438SponsorPostNotFound, Status435NoAuthorities, Status437PostNotFound, IOException;
 
-    void updateSponsorPost(String token, Long sponsorPostId, String postText, MultipartFile file) throws IOException, Status438SponsorPostNotFound, Status435NoAuthorities, Status437PostNotFound;
+    void updateSponsorPost(String token, Long sponsorPostId, String postText, List<MultipartFile> file) throws IOException, Status438SponsorPostNotFound, Status435NoAuthorities, Status437PostNotFound;
 
     List<SponsorPost> findAllSponsorPosts();
+
+    List<SponsorReport> getReport(String token) throws Status434UserNotFound;
 }

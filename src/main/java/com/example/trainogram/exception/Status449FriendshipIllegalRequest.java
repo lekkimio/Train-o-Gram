@@ -8,7 +8,7 @@ public class Status449FriendshipIllegalRequest extends ErrorCodeException {
 
 
     public Status449FriendshipIllegalRequest(User owner, User friend) {
-        super(CODE,"Friendship already exists between owner Id: " + owner.getId() + "and friend Id: " + friend.getId());
+        super(CODE,"Friendship already exists between owner Id: " + owner.getId() + " and friend Id: " + friend.getId());
 
     }
 

@@ -10,6 +10,7 @@ import com.example.trainogram.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,13 +21,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Qualifier("chatService")
 public class ChatService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final UserChatRoomRepository userChatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final UserService userService;
-    private final ChatFEConverter chatFEConverter;
     private final ModelMapper modelMapper;
 
 
@@ -34,12 +35,13 @@ public class ChatService {
     public List<ChatMessage> save(NewChatMessage incomeMessage) {
         User sender = userService.findById(incomeMessage.getSenderId());
         if (sender == null) {
-            throw new Status434UserNotFound("Can't save incoming chat message because user not found. UserId: " + incomeMessage.getSenderId());
+            throw new Status434UserNotFound(
+                    "Can't save incoming chat message because user not found. UserId: " + incomeMessage.getSenderId());
         }
 
         List<ChatMessage> chatMessages = new ArrayList<>();
 
-        List<User> recipients = chatRoomRepository.findByChatId(incomeMessage.getChatId()).get().getUsers();
+        List<User> recipients = chatRoomRepository.findByChatIdaAndSenderId(incomeMessage.getChatId(), sender.getId()).get().getUsers();
         recipients
                 .forEach(recipient -> {
                     chatMessages.add(chatMessageRepository.save(ChatMessage.builder()
@@ -50,15 +52,15 @@ public class ChatService {
                             .status(sender.getId().equals(recipient.getId()) ? ChatMessageStatus.DELIVERED : ChatMessageStatus.RECEIVED)
                             .build()));
                 });
-        ChatRoom chatRoom = chatRoomRepository.findByChatId(incomeMessage.getChatId()).get();
-        ChatRoomFE chatRoomFE = chatFEConverter.convertChatRoomToFE(chatRoom);
+        ChatRoom chatRoom = chatRoomRepository.findByChatIdaAndSenderId(incomeMessage.getChatId(), sender.getId()).get();
+//        ChatMessage chatRoomFE = chatFEConverter.convertChatRoomToFE(chatRoom);
 
         new Thread(() -> recipients.stream()
                 .filter(recipient -> !sender.getId().equals(recipient.getId()))
                 .forEach(recipient -> {
-                    chatRoomFE.setNewMessageCount(chatMessageRepository.countChatMessagesByChatIdAndRecipientIdAndStatus(chatRoom.getChatId(), recipient.getId(), ChatMessageStatus.RECEIVED));
+//                    chatRoomFE.se tNewMessageCount(chatMessageRepository.countChatMessagesByChatIdAndRecipientIdAndStatus(chatRoom.getChatId(), recipient.getId(), ChatMessageStatus.RECEIVED));
                     ChatMessage chatMessage = chatMessageRepository.findFirstByChatIdOrderByIdDesc(chatRoom.getChatId());
-                    chatRoomFE.setLastMessage(chatFEConverter.convertChatMessageToFe(chatMessage));
+//                    chatRoomFE.setLastMessage(chatFEConverter.convertChatMessageToFe(chatMessage));
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -71,7 +73,7 @@ public class ChatService {
     public Long createNewChat(Long recipientId, String senderToken) throws Status452ChatAlreadyExistException, Status434UserNotFound {
         User sender = userService.findAuthenticatedUser(senderToken);
         User recipient = userService.findById(recipientId);
-        Long chatId = chatRoomRepository.getChatId()+1;
+        Long chatId = getChatId()+1;
 
         List<ChatRoom> existingChatRoom = chatRoomRepository.findAllByChatId(chatId).get();
         if (existingChatRoom.size() > 0) throw new Status452ChatAlreadyExistException();
@@ -96,19 +98,19 @@ public class ChatService {
     }
 
     public Long getChatId() {
-        Long id = chatRoomRepository.getChatId();
+        Long id = chatRoomRepository.getMaxChatId();
         return id == null ? 1 : id;
     }
 
 
-    public List<ChatMessageFE> findChatMessagesAndMarkDelivered(Long chatId, String token) {
+    public List<ChatMessage> findChatMessagesAndMarkDelivered(Long chatId, String token) {
         User recipient = userService.findAuthenticatedUser(token);
         List<ChatMessage> chatMessages = chatMessageRepository.findAllByChatIdAndRecipientId(chatId, recipient.getId());
         if (chatMessages.size() > 0) {
             chatMessages.forEach(chatMessage -> chatMessage.setStatus(ChatMessageStatus.DELIVERED));
             chatMessageRepository.saveAll(chatMessages);
             chatMessages.sort(Comparator.comparingLong(ChatMessage::getId).reversed());
-            return Arrays.asList(modelMapper.map(chatMessages, ChatMessageFE[].class));
+            return Arrays.asList(modelMapper.map(chatMessages, ChatMessage[].class));
         } else {
             return new ArrayList<>();
         }
@@ -135,4 +137,29 @@ public class ChatService {
     }
 
 
+    public ChatRoom getChatroomById(Long chatroomId) {
+        return chatRoomRepository.findById(chatroomId).orElseThrow(IllegalArgumentException::new);
+    }
+    public ChatRoom getChatRoomByChatIdAndSenderId(Long chatId, Long senderId) {
+        return chatRoomRepository.getChatRoomByChatIdAndSenderId(chatId, senderId);
+    }
+
+
+    public void sendMessage(ChatMessage messageObj) {
+        messageObj.setStatus(ChatMessageStatus.DELIVERED);
+        chatMessageRepository.save(messageObj);
+    }
+
+    public User getUserByChatroomId(Long chatRoomId) throws Status434UserNotFound {
+        long userId = chatRoomRepository.findSenderById(chatRoomId);
+        return userService.findById(userId);
+    }
+
+    public User getCurrentUser(String username) {
+        return userService.findUserByUsername(username);
+    }
+
+    public List<ChatMessage> getChatMessages(Long chatId) {
+        return chatMessageRepository.findAllByChatIdOrderByCreatedDate(chatId);
+    }
 }

@@ -15,8 +15,10 @@ public interface SponsorPostRepository extends JpaRepository<SponsorPost, Long> 
 
     List<SponsorPost> findAllByUserId(Long id);
 
-    @Query("SELECT id from SponsorPost where id=(SELECT MAX(id) from SponsorPost)")
-    Long max();
+//    @Query("SELECT id from SponsorPost where id=(SELECT MAX(id) from SponsorPost)")
+//    Long max();
+    @Query("select max(id) from SponsorPost")
+    Optional<Long> max();
 
     SponsorPost findByPost(Post post);
 }

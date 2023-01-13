@@ -21,4 +21,6 @@ public interface CommentService {
     void updateComment(String token, String commentText, Long commentId) throws Status439CommentNotFound;
 
     void updateComment(Comment comment);
+
+    Comment getComment(String token, Long commentId) throws Status439CommentNotFound;
 }

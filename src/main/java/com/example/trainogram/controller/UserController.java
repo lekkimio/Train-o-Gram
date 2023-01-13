@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -35,8 +36,8 @@ public class UserController {
 
 
     @GetMapping()
-    public List<UserResponseDto> getAllUsers(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token) throws Status434UserNotFound, Status435NoAuthorities {
-        List<User> users = userService.findAllUsers(token);
+    public List<UserResponseDto> getAllUsers(/*@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token*/) throws Status434UserNotFound, Status435NoAuthorities {
+        List<User> users = userService.findAllUsers(/*token*/);
         Type listType = new TypeToken<List<UserResponseDto>>() {}.getType();
         return modelMapper.map(users, listType);
     }
@@ -47,7 +48,7 @@ public class UserController {
     }
 
     @PostMapping()
-    public void createUser(UserAuthDto user) throws Status436UserExistsException {
+    public void createUser(UserAuthDto user) throws Status436UserExistsException, MessagingException, IOException {
         userService.createUser(user);
     }
 

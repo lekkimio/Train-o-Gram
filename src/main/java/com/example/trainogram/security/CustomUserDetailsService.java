@@ -23,7 +23,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        return CustomUserDetails.fromUser(user);
+        return JwtUser.create(user);
+    }
+
+    public User getUser(String username){
+        return userRepository.findUserByUsername(username);
     }
 
 }

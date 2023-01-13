@@ -1,43 +1,50 @@
 package com.example.trainogram.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Setter
 @Entity
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToMany(mappedBy = "post",fetch = FetchType.EAGER,cascade = CascadeType.REMOVE)
+    private Set<PostLike> likes;
 
-    private Integer likes;
+    public Integer getLikes() {
+        return Math.toIntExact(likes.stream().count());
+    }
 
+    @OneToMany(mappedBy = "post",fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<Comment> comments;
 
-    @OneToOne
+    @OneToOne()
     @JoinColumn(name = "post_author_id")
     private User postAuthor;
-
-    private String postPicture;
 
     private String postText;
 
     private LocalDateTime pubDate;
 
-    @OneToMany()
-    private List<Comment> comments;
 
+    @ElementCollection
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @Column(name = "picture", nullable = false)
+    @CollectionTable(name = "post_picture", joinColumns = @JoinColumn(name = "post_id"))
+    private List<String> picture;
 }

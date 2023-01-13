@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class NotificationResponseDto implements Serializable {
+    private Long id;
     private String message;
     private LocalDateTime dateOfReceiving;
     private NotificationStatus status;
