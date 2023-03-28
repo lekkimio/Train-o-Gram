@@ -1,6 +1,5 @@
 package com.example.trainogram.service.impl;
 
-import com.example.trainogram.exception.Status434UserNotFound;
 import com.example.trainogram.model.Post;
 import com.example.trainogram.model.User;
 import org.apache.commons.io.FileUtils;
@@ -11,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,6 +25,7 @@ public class PictureService {
 
 
     private final String folder = "D:\\Games\\pictures\\";
+    private final String standardAvatar = "D:\\Games\\pictures\\user_picture.jpg";
 
     public String saveUserImage(MultipartFile file, Long userId) throws IOException {
         String userPath = folder + userId;
@@ -34,6 +33,8 @@ public class PictureService {
     }
 
     public List<String> savePostImage(List<MultipartFile> file, Long userId, Long postId) throws IOException {
+
+
         String userPath = folder + userId + "\\post\\" + postId;
         List<String> pictures = new ArrayList<>();
         for (MultipartFile multipartFile : file) {
@@ -76,11 +77,14 @@ public class PictureService {
     public InputStreamResource getUserAvatar(User user) throws IOException {
         String path = user.getId()+File.separator+user.getAvatar();
 
+        System.out.println(path);
         var imgFile = new ClassPathResource(path);
         boolean boo = imgFile.exists();
 
         if (!boo) {
-            imgFile = new ClassPathResource(File.separator+"user_picture.jpg");
+            imgFile = new ClassPathResource(standardAvatar);
+            System.out.println(imgFile.getPath());
+
         }
 
         return new InputStreamResource(imgFile.getInputStream());

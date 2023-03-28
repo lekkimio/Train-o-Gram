@@ -20,10 +20,16 @@ public class ChatController {
 
 
     @PostMapping("/create-chat")
-    public Long createChat(Long recipientId,
+    public Long createChat(@RequestParam List<Long> recipientId,
                            @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) throws Status434UserNotFound, Status452ChatAlreadyExistException {
         return chatService.createNewChat(recipientId, token);
     }
+
+//    @PostMapping("/create-group-chat")
+//    public Long createChat(List<Long> recipientId,
+//                           @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) throws Status434UserNotFound, Status452ChatAlreadyExistException {
+//        return chatService.createNewGroupChat(recipientId, token);
+//    }
 
     @GetMapping("/messages/{chatId}")
     public List<ChatMessage> getChatMessage(
@@ -32,11 +38,11 @@ public class ChatController {
         return chatService.findChatMessagesAndMarkDelivered(chatId, token);
     }
 
-    @DeleteMapping("/delete/{chatId}")
-    public void deleteChat(@PathVariable Long chatId, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) throws Status453ChatNotFoundException {
-        chatService.deleteChat(chatId, token);
-
-    }
+//    @DeleteMapping("/delete/{chatId}")
+//    public void deleteChat(@PathVariable Long chatId, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) throws Status453ChatNotFoundException {
+//        chatService.deleteChat(chatId, token);
+//
+//    }
 
 
 

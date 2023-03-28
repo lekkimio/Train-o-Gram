@@ -2,6 +2,7 @@ package com.example.trainogram.service.email;
 
 import com.example.trainogram.model.User;
 import com.example.trainogram.service.UserService;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.messaging.MessagingException;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -21,9 +22,9 @@ import java.util.List;
 public class EmailSenderImpl implements EmailSender {
 
 
-    private final JavaMailSenderService mailSender;
+    private final JavaMailSender mailSender;
 
-    public EmailSenderImpl(JavaMailSenderService mailSender) {
+    public EmailSenderImpl(JavaMailSender mailSender) {
         this.mailSender = mailSender;}
 
     private final String path = "D:\\Games\\Projects\\Train-o-Gram\\src\\main\\resources\\templates\\";
@@ -39,7 +40,7 @@ public class EmailSenderImpl implements EmailSender {
     @Override
     public void sendEmail(String toEmail) throws MessagingException, javax.mail.MessagingException, IOException {
 
-        MimeMessage mimeMessage = mailSender.getJavaMailSender().createMimeMessage();
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
         helper.setTo(toEmail);
         mimeMessage.setFrom("lekkimio15@gmail.com");
@@ -55,7 +56,7 @@ public class EmailSenderImpl implements EmailSender {
 //        helper.set
 //        mimeMessage.setFileName("message");
 //        helper.setText(htmlMsg, true); // Use this or above line.
-        mailSender.getJavaMailSender().send(mimeMessage);
+        mailSender.send(mimeMessage);
 
 //
 //        SimpleMailMessage message = new SimpleMailMessage();
@@ -76,7 +77,7 @@ public class EmailSenderImpl implements EmailSender {
 
     @Override
     public void sendEmail(List<String> to, String subject, String template) throws javax.mail.MessagingException, IOException {
-        MimeMessage mimeMessage = mailSender.getJavaMailSender().createMimeMessage();
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 
 
@@ -90,7 +91,7 @@ public class EmailSenderImpl implements EmailSender {
 
         for (String user : to) {
             helper.setTo(user);
-            mailSender.getJavaMailSender().send(mimeMessage);
+            mailSender.send(mimeMessage);
             System.out.println("Mail sent....");
         }
 
@@ -99,7 +100,7 @@ public class EmailSenderImpl implements EmailSender {
 
     @Override
     public void sendEmail(String to, String subject, String template) throws javax.mail.MessagingException, IOException {
-        MimeMessage mimeMessage = mailSender.getJavaMailSender().createMimeMessage();
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
         mimeMessage.setFrom("lekkimio15@gmail.com");
         mimeMessage.setSubject(subject);
@@ -108,7 +109,7 @@ public class EmailSenderImpl implements EmailSender {
         mimeMessage.setContent(text, "text/html");
 
             helper.setTo(to);
-            mailSender.getJavaMailSender().send(mimeMessage);
+            mailSender.send(mimeMessage);
             System.out.println("Mail sent....");
 
 

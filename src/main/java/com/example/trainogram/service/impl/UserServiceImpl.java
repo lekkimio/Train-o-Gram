@@ -67,7 +67,8 @@ public class UserServiceImpl implements UserService {
                     .username(dto.getUsername())
                     .password(passwordEncoder.encode(dto.getPassword()))
                     .role(Role.USER)
-                    .avatar("user_picture.jpg").build());
+                    .avatar("user_picture.jpg")
+                    .build());
              emailSender.sendEmail(newUser.getEmail(), "Congratulations!", "auth_successful.html");
 
              return newUser;

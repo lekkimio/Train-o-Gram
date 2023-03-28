@@ -15,10 +15,7 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @ServerEndpoint(value = "/chat/{chatId}",
@@ -47,9 +44,10 @@ public class ChatWebSocket {
 //        this.currentChat = chatService.getChatroomById(chatroomId);
         this.currentChat = chatService.getChatRoomByChatIdAndSenderId(chatId, currentUser.getId());
 
-        boolean flag = true;
 
-        /*for (User member : currentChat.getUsers()) {
+
+        /*  boolean flag = true;
+        for (User member : currentChat.getUsers()) {
             if (Objects.equals(member.getId(), currentUser.getId())) {
                 flag = false;
                 break;
@@ -64,6 +62,8 @@ public class ChatWebSocket {
         List<ChatMessage> messages = chatService.getChatMessages(currentChat.getChatId());
 
         for (ChatMessage message : messages) {
+            message.setStatus(ChatMessageStatus.READ);
+            chatService.updateMessage(message);
             broadcastToChat(message);
         }
     }
@@ -72,12 +72,14 @@ public class ChatWebSocket {
         CHAT_WEB_SOCKETS.forEach(endpoint -> {
             synchronized (this) {
                 if (Objects.equals(this.currentChat.getId(), endpoint.currentChat.getId())) {
+                    if (Objects.equals(message.getRecipientId(), endpoint.currentUser.getId())) {
                         try {
                             endpoint.session.getBasicRemote().
                                     sendObject(message);
                         } catch (IOException | EncodeException e) {
                             e.printStackTrace();
                         }
+                    }
                 }
             }
         });
@@ -101,33 +103,57 @@ public class ChatWebSocket {
 
     public void sendMessage(String message) {
 
-        ChatMessage messageObj = ChatMessage.builder()
-                .chatId(currentChat.getChatId())
-                .content(message)
-                .createdDate(new Date())
-                .recipientId(currentChat.getRecipientId())
-                .senderId(currentChat.getSenderId())
-                .status(ChatMessageStatus.SENDING)
-                .build();
+        List<Long> members = currentChat.getRecipientsId();
+        members.add(currentUser.getId());
 
-        chatService.sendMessage(messageObj);
+            for (Long recipient : currentChat.getRecipientsId()) {
 
-        broadcast(ChatMessage.builder()
-                .id(messageObj.getId())
-                .chatId(messageObj.getChatId())
-                .senderId(messageObj.getSenderId())
-                .recipientId(messageObj.getRecipientId())
-                .content(messageObj.getContent())
-                .createdDate(messageObj.getCreatedDate())
-                .build());
+                ChatMessage messageObj = ChatMessage.builder()
+                        .chatId(currentChat.getChatId())
+                        .content(message)
+                        .createdDate(new Date())
+                        .recipientId(recipient)
+                        .senderId(currentChat.getSenderId())
+                        .status(ChatMessageStatus.DELIVERED)
+                        .build();
+
+                chatService.sendMessage(messageObj);
+
+                broadcast(ChatMessage.builder()
+                        .id(messageObj.getId())
+                        .chatId(messageObj.getChatId())
+                        .senderId(messageObj.getSenderId())
+                        .recipientId(messageObj.getRecipientId())
+                        .content(messageObj.getContent())
+                        .createdDate(messageObj.getCreatedDate())
+                        .build());
+        }
+
 
     }
+
+//    private void broadcastToUser(ChatMessage build) {
+//        CHAT_WEB_SOCKETS.forEach(endpoint -> {
+//            synchronized (this) {
+//                if (Objects.equals(this.currentChat.getChatId(), endpoint.currentChat.getChatId())) {
+//                    if (!Objects.equals(this.currentUser.getId(), endpoint.currentUser.getId())) {
+//                        try {
+//                            endpoint.session.getBasicRemote().
+//                                    sendObject(messageDto);
+//                        } catch (IOException | EncodeException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     private void broadcast(ChatMessage messageDto) {
         CHAT_WEB_SOCKETS.forEach(endpoint -> {
             synchronized (this) {
                 if (Objects.equals(this.currentChat.getChatId(), endpoint.currentChat.getChatId())) {
-                    if (!Objects.equals(this.currentUser.getId(), endpoint.currentUser.getId())) {
+                    if (Objects.equals(messageDto.getRecipientId(), endpoint.currentUser.getId())) {
                         try {
                             endpoint.session.getBasicRemote().
                                     sendObject(messageDto);

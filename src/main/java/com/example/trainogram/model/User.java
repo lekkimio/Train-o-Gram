@@ -38,7 +38,4 @@ public class User {
 //    @Convert(converter = RoleConverter.FieldConverter.class)
     @Enumerated(EnumType.STRING)
     private Role role;
-
-//    private boolean deleted;
-
 }

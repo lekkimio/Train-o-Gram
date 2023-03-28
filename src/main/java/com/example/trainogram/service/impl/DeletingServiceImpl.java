@@ -23,7 +23,6 @@ public class DeletingServiceImpl implements DeletingService {
         deletedUser.setUsername("DELETED");
         deletedUser.setPassword("deleted");
         deletedUser.setEmail("DELETED");
-        deletedUser.setRole(Role.DELETED);
         deletedUser.setAvatar("DELETED");
 
 
